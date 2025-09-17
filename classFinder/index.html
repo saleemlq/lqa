@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schedule Checker</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+    #result {
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+      text-align: center;
+      max-width: 80%;
+    }
+  </style>
+</head>
+<body>
+  <button id="checkBtn">Add / Update Schedule</button>
+  <div id="result">Loading schedule...</div>
+
+  <script src="currentStudentFinder.js"></script>
+  <script>
+    function showClassInfo(scheduleText) {
+      const result = getCurrentOrNextClass(scheduleText);
+      document.getElementById("result").innerText = result;
+    }
+
+    // On page load
+    window.addEventListener("DOMContentLoaded", () => {
+      const saved = localStorage.getItem("regularSchedule");
+      if (saved) {
+        showClassInfo(saved);
+      } else {
+        document.getElementById("result").innerText =
+          "No schedule found. Please press the button and copy schedule text first.";
+      }
+    });
+
+    // On button click: read from clipboard and save
+    document.getElementById("checkBtn").addEventListener("click", async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text.trim()) {
+          localStorage.setItem("regularSchedule", text);
+          showClassInfo(text);
+        } else {
+          document.getElementById("result").innerText = "Clipboard is empty!";
+        }
+      } catch (err) {
+        document.getElementById("result").innerText =
+          "Failed to read clipboard!";
+      }
+    });
+  </script>
+</body>
+</html>

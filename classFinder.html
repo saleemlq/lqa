@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Schedule Checker</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+        }
+
+        pre {
+            background: #222;
+            color: #0f0;
+            padding: 10px;
+            border-radius: 6px;
+            overflow: auto;
+        }
+
+        .current {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 10px;
+            color: #d00;
+        }
+
+        .next {
+            font-size: 1.1em;
+            margin-top: 5px;
+            color: #006;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Schedule Parser & Checker</h1>
+    <p>Paste your schedule text below, then click "Parse & Check".</p>
+    <textarea id="scheduleText"></textarea>
+    <br><br>
+    <button onclick="runParser()">Parse & Check</button>
+    <div id="output"></div>
+
+    <script>
+        function normalizeDayName(s) {
+            if (!s) return "";
+            s = s.trim().toLowerCase();
+            const map = {
+                mon: "Monday", monday: "Monday",
+                tue: "Tuesday", tues: "Tuesday", tuesday: "Tuesday",
+                wed: "Wednesday", wednesday: "Wednesday",
+                thu: "Thursday", thur: "Thursday", thursday: "Thursday",
+                fri: "Friday", friday: "Friday",
+                sat: "Saturday", saturday: "Saturday",
+                sun: "Sunday", sunday: "Sunday"
+            };
+            if (map[s]) return map[s];
+            for (const k in map) if (s.includes(k)) return map[k];
+            return s;
+        }
+        function detectDelimiter(line) {
+            if (line.indexOf("\t") >= 0) return /\t/;
+            if (/\s{2,}/.test(line)) return /\s{2,}/;
+            return /\s+/;
+        }
+        function parseTimeToMinutes(timeStr) {
+            const m = timeStr.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM|am|pm)?$/);
+            if (!m) return null;
+            let hh = parseInt(m[1], 10);
+            const mm = parseInt(m[2], 10);
+            const ampm = (m[3] || "").toUpperCase();
+            if (ampm === "AM") { if (hh === 12) hh = 0; }
+            else if (ampm === "PM") { if (hh !== 12) hh += 12; }
+            return hh * 60 + mm;
+        }
+        function findHeaderLineIndex(lines) {
+            const dayWords = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+            for (let i = 0; i < lines.length; i++) {
+                const low = lines[i].toLowerCase();
+                let count = 0;
+                for (const d of dayWords) if (low.includes(d)) count++;
+                if (count >= 4) return i;
+            }
+            return -1;
+        }
+        function parseScheduleText(text, slotMinutes = 30) {
+            text = text.replace(/\u00A0/g, " ");
+            const lines = text.split(/\r?\n/).map(l => l.trimRight()).filter(l => l.trim() !== "");
+            const headerIndex = findHeaderLineIndex(lines);
+            if (headerIndex === -1) throw new Error("No header with day names found.");
+            const headerLine = lines[headerIndex];
+            const delim = detectDelimiter(headerLine);
+            const headerTokens = headerLine.split(delim).map(t => t.trim()).filter(Boolean);
+            const dayTokens = headerTokens.slice(1).map(normalizeDayName);
+            const schedule = [];
+            for (let r = headerIndex + 1; r < lines.length; r++) {
+                const tokens = lines[r].split(delim).map(t => t.trim());
+                const timeToken = tokens[0] || "";
+                const timeMinutes = parseTimeToMinutes(timeToken);
+                if (timeMinutes === null) continue;
+                while (tokens.length < dayTokens.length + 1) tokens.push("");
+                for (let i = 0; i < dayTokens.length; i++) {
+                    const student = tokens[i + 1].trim();
+                    if (!student) continue;
+                    const startMinutes = timeMinutes;
+                    const endMinutesRaw = startMinutes + slotMinutes;
+                    schedule.push({ day: dayTokens[i], time: timeToken, startMinutes, endMinutesRaw, student });
+                }
+            }
+            return schedule;
+        }
+        function getStudentForNow(schedule, opts = {}) {
+            const now = opts.now || new Date();
+            const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            const todayName = dayNames[now.getDay()];
+            const nowMinutes = now.getHours() * 60 + now.getMinutes();
+            for (const e of schedule) {
+                if (e.day !== todayName) continue;
+                if (e.endMinutesRaw <= 1440) {
+                    if (nowMinutes >= e.startMinutes && nowMinutes < e.endMinutesRaw) return { student: e.student, entry: e };
+                } else {
+                    if (nowMinutes >= e.startMinutes && nowMinutes < 1440) return { student: e.student, entry: e };
+                }
+            }
+            return null;
+        }
+        function getNextClass(schedule, opts = {}) {
+            const now = opts.now || new Date();
+            const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            const todayIndex = now.getDay();
+            const nowMinutes = now.getHours() * 60 + now.getMinutes();
+            // Check today first
+            let upcoming = null;
+            for (const e of schedule) {
+                const dayIndex = dayNames.indexOf(e.day);
+                if (dayIndex === todayIndex && e.startMinutes > nowMinutes) {
+                    if (!upcoming || e.startMinutes < upcoming.startMinutes) upcoming = e;
+                }
+            }
+            if (upcoming) return upcoming;
+            // Check future days
+            for (let offset = 1; offset <= 7; offset++) {
+                const checkDayIndex = (todayIndex + offset) % 7;
+                const checkDay = dayNames[checkDayIndex];
+                const candidates = schedule.filter(e => e.day === checkDay);
+                if (candidates.length > 0) {
+                    // pick earliest
+                    candidates.sort((a, b) => a.startMinutes - b.startMinutes);
+                    return candidates[0];
+                }
+            }
+            return null;
+        }
+        function runParser() {
+            const text = document.getElementById("scheduleText").value;
+            let outputDiv = document.getElementById("output");
+            try {
+                const schedule = parseScheduleText(text);
+                const nowResult = getStudentForNow(schedule);
+                const nextResult = !nowResult ? getNextClass(schedule) : null;
+                outputDiv.innerHTML = `
+      <div class="current">
+        Current time: ${new Date().toLocaleString()}<br>
+        ${nowResult ? "Now in class: " + nowResult.student + " (" + nowResult.entry.day + " " + nowResult.entry.time + ")"
+                        : "No class right now."}
+      </div>
+      ${nextResult ? `<div class="next">Next class: ${nextResult.student} (${nextResult.day} ${nextResult.time})</div>` : ""}
+      <h3>Parsed Schedule:</h3>
+      <pre>${JSON.stringify(schedule, null, 2)}</pre>
+    `;
+            } catch (e) {
+                outputDiv.innerHTML = "<b style='color:red'>Error: " + e.message + "</b>";
+            }
+        }
+        /* Prefill */
+        document.getElementById("scheduleText").value =
+            `Time/Days\tMONDAY\tTUESDAY\tWEDNESDAY\tTHURSDAY\tFRIDAY\tSATURDAY\tSUNDAY
+12:00 AM\t\t\tAamir Ahmed\tAamir Ahmed\tSamba Njie\t\t
+08:30 PM\tNael Ibrahim\tSara Iqbal\tNael Ibrahim\tSara Iqbal\tSamba Njie\t\t
+09:00 PM\tMohammad Raiyaan\t\tMohammad Raiyaan\t\tSamba Njie\t\t
+09:30 PM\tAryan Ali\tAryan Ali\tAryan Ali\tAryan Ali\tAryan Ali\t\t
+10:00 PM\tTaha Chaudhry\tTaha Chaudhry\tTaha Chaudhry\tTaha Chaudhry\tTaha Chaudhry\t\t
+10:30 PM\tRayan Mohammed\tRayan Mohammed\tRayan Mohammed\t\tRayan Mohammed\t\t
+11:00 PM\tZunairah Ayaat\tZunairah Ayaat\tZunairah Ayaat\tZunairah Ayaat\tZunairah Ayaat\t\t
+11:30 PM\tSara Iqbal\tSamba Njie\tRayan Mohammed\tSamba Njie\tAamir Ahmed\t\t`;
+    </script>
+</body>
+
+</html>

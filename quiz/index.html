@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz by Learn Quraan Academy</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+  </head>
+  <body>
+    <div id="sparkle-layer"></div>
+
+    <div id="quiz-app">
+      <div class="button-and-name">
+        <button id="back-button" class="cardy" style="display: none">
+          ← Back
+        </button>
+        <div id="student-display"></div>
+      </div>
+
+      <div id="quiz-container">
+        <!-- Start Screen (Level Select) -->
+        <div id="start-screen" class="screen active">
+          <div class="top-bar">
+            <!-- <label for="student-select" id="manage-students-btn">👤 </label> -->
+            <div class="custom-dropdown" id="student-dropdown">
+              <div class="dropdown-selected">-- Select Student --</div>
+              <ul class="dropdown-options"></ul>
+            </div>
+          </div>
+          <h1>✨ Select a Level</h1>
+          <ul id="level-list"></ul>
+        </div>
+
+<!-- Popup Modal -->
+<div id="student-popup" class="popup hidden">
+  <div class="popup-content">
+    <h2>Manage Students</h2>
+    <div id="student-inputs"></div>
+    <button id="close-popup">Close</button>
+  </div>
+</div>
+
+        <!-- Quiz List Screen -->
+        <div id="quiz-list-screen" class="screen hidden">
+          <h1>📚 Select a Quiz</h1>
+          <ul id="quiz-list"></ul>
+        </div>
+
+        <!-- Question Screen -->
+        <div id="question-screen" class="screen hidden">
+          <div class="quiz-header">
+            <div class="quiz-title-and-question-number">
+              <span id="quiz-title" class="quiz-title">Quiz</span>
+              <div class="question-number">
+                Question <span id="current-q">1</span> of
+                <span id="total-q">10</span>
+              </div>
+            </div>
+            <div class="timer">⏱ <span id="timer">30</span>s</div>
+          </div>
+
+          <h2 id="question-text"></h2>
+          <ul id="options-list"></ul>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="screen hidden">
+          <h2>🎉 Quiz Completed</h2>
+          <h1 id="quote">
+            Every result is a step forward — either a victory to celebrate or a
+            lesson to grow from!
+          </h1>
+          <p id="score-text"></p>
+          <button class="cardy" onclick="loadLevels()">Try Another Quiz</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="quizzes.js"></script>
+    <script src="quizzes/islamic-level1.js"></script>
+    <script src="quizzes/islamic-level2.js"></script>
+    <script src="quizzes/islamic-level3.js"></script>
+    <script src="quizzes/basic-tajweed.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

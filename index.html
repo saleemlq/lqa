@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Hub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      cursor: default;
+      user-select: none;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Quicksand", sans-serif;
+      background: radial-gradient(circle at top left, #101010, #0c0c0c 80%);
+      color: #f4f4f4;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Glowing animated bg */
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(ellipse at 30% 30%,
+          rgba(255, 235, 59, 0.06),
+          transparent 60%),
+        radial-gradient(ellipse at 70% 80%,
+          rgba(0, 255, 204, 0.04),
+          transparent 70%);
+      animation: bgMove 40s infinite linear;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::after {
+      animation-direction: reverse;
+      opacity: 0.6;
+      filter: blur(20px);
+    }
+
+    @keyframes bgMove {
+      0% {
+        transform: rotate(0deg) scale(1);
+      }
+
+      100% {
+        transform: rotate(360deg) scale(1);
+      }
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      z-index: 2;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.2rem;
+      color: #ffe761;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      position: relative;
+    }
+
+    #manage-students-btn {
+      cursor: pointer;
+      font-size: 1.5rem;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    #manage-students-btn:hover {
+      transform: scale(1.2);
+      text-shadow: 0 0 10px #00ffc8;
+    }
+
+    .custom-dropdown {
+      position: relative;
+      width: 200px;
+      font-size: 1rem;
+      color: #fff;
+      cursor: pointer;
+      background: #141414;
+      border: 1px solid #444;
+      border-radius: 12px;
+      transition: 0.3s;
+    }
+
+    .dropdown-selected {
+      padding: 10px 16px;
+      border-radius: 12px;
+      background: linear-gradient(145deg, #1a1a1a, #121212);
+    }
+
+    .custom-dropdown:hover,
+    .custom-dropdown.open {
+      border-color: #00ffc8;
+      background-color: #1c1e27;
+    }
+
+    .dropdown-options {
+      position: absolute;
+      top: 110%;
+      left: 0;
+      right: 0;
+      max-height: 220px;
+      overflow-y: auto;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 14px;
+      z-index: 10;
+      padding: 0;
+      display: none;
+    }
+
+    .custom-dropdown.open .dropdown-options {
+      display: block;
+    }
+
+    .dropdown-options li {
+      list-style: none;
+      padding: 12px 16px;
+      border-bottom: 1px solid #222;
+      color: #eaeaea;
+      background: linear-gradient(145deg, #181818, #1e1e1e);
+      transition: 0.2s;
+    }
+
+    .dropdown-options li:hover {
+      background: linear-gradient(145deg, #222, #292929);
+      border-color: #00ffc8;
+      color: #fff;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      z-index: 1;
+      padding: 2rem;
+    }
+
+    .links {
+      display: flex;
+      gap: 2rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .links a {
+      padding: 1.2rem 2rem;
+      background: linear-gradient(145deg, #181818, #1e1e1e);
+      color: #ffffff;
+      text-decoration: none;
+      border-radius: 14px;
+      font-weight: bold;
+      border: 1px solid #333;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      box-shadow: 0 0 8px rgba(0, 255, 204, 0.05),
+        inset 0 0 4px rgba(255, 255, 255, 0.02);
+    }
+
+    .links a:hover {
+      transform: translateY(-3px) scale(1.05);
+      border-color: #00ffc8;
+      box-shadow: 0 0 12px rgba(0, 255, 200, 0.3),
+        0 0 6px rgba(0, 255, 200, 0.1),
+        inset 0 0 4px rgba(255, 255, 255, 0.05);
+      background: linear-gradient(145deg, #222, #292929);
+    }
+
+    /* Popup Sidebar */
+    .popup {
+      position: fixed;
+      top: 0;
+      right: -420px;
+      width: 400px;
+      max-width: 100%;
+      height: 100%;
+      background: rgba(25, 25, 25, 0.95);
+      border-left: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: -2px 0 15px rgba(0, 0, 0, 0.6);
+      transition: right 0.3s ease;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .popup.open {
+      right: 0;
+    }
+
+    .popup-content {
+      padding: 1.5rem;
+      overflow-y: auto;
+      overflow-x: hidden;
+      flex: 1;
+    }
+
+    .popup-content h2 {
+      color: #ffe761;
+      margin-top: 0;
+    }
+
+    .student-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      gap: 0.5rem;
+    }
+
+    .student-row input {
+      flex: 1;
+      padding: 0.6rem;
+      border-radius: 10px;
+      border: 1px solid #444;
+      background: #141414;
+      color: #fdfdfd;
+      font-size: 0.95rem;
+      min-width: 0;
+    }
+
+    .student-row input:focus {
+      border-color: #00ffc8;
+      background: #1c1e27;
+      outline: none;
+    }
+
+    .remove-btn {
+      background: rgba(0, 255, 204, 0.05);
+      border: none;
+      color: #fff;
+      padding: 0.4rem 0.6rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .remove-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #00ffc8;
+    }
+
+    #close-popup {
+      background: #2d2d2d;
+      border: 1px solid #444;
+      color: #fff;
+      padding: 0.8rem;
+      cursor: pointer;
+      border-radius: 0 0 12px 12px;
+      transition: 0.3s;
+    }
+
+    #close-popup:hover {
+      background: #444;
+      border-color: #00ffc8;
+      color: #00ffc8;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>📚 Student Hub</h1>
+    <div class="top-bar">
+      <label id="manage-students-btn">👤</label>
+      <div class="custom-dropdown" id="student-dropdown">
+        <div class="dropdown-selected">-- Select Student --</div>
+        <ul class="dropdown-options"></ul>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <h2>Welcome!</h2>
+    <p>Select a student and choose an app:</p>
+    <div class="links">
+      <a href="./quiz/index.html">Go to Quiz</a>
+      <a href="./dailylog/index.html">Go to Daily Log</a>
+    </div>
+  </main>
+
+  <!-- Student Sidebar -->
+  <div id="student-popup" class="popup">
+    <div class="popup-content">
+      <h2>Manage Students</h2>
+      <div id="student-inputs"></div>
+    </div>
+    <button id="close-popup">Close</button>
+  </div>
+
+  <script>
+    let currentStudent = localStorage.getItem("activeStudent") || "";
+
+    const manageBtn = document.getElementById("manage-students-btn");
+    const popup = document.getElementById("student-popup");
+    const closePopup = document.getElementById("close-popup");
+    const studentInputsDiv = document.getElementById("student-inputs");
+
+    function loadStudents() {
+      const list = JSON.parse(localStorage.getItem("listOfStudents") || "[]");
+      const dropdown = document.getElementById("student-dropdown");
+      const selected = dropdown.querySelector(".dropdown-selected");
+      const optionsList = dropdown.querySelector(".dropdown-options");
+
+      optionsList.innerHTML = "";
+      if (!currentStudent) selected.textContent = "-- Select Student --";
+
+      list.forEach((name) => {
+        const li = document.createElement("li");
+        li.textContent = name;
+        li.addEventListener("click", (e) => {
+          e.stopPropagation();
+          selected.textContent = name;
+          currentStudent = name;
+          localStorage.setItem("activeStudent", currentStudent);
+          dropdown.classList.remove("open");
+        });
+        optionsList.appendChild(li);
+      });
+
+      dropdown.querySelector(".dropdown-selected").addEventListener("click", (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle("open");
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!dropdown.contains(e.target)) {
+          dropdown.classList.remove("open");
+        }
+      });
+
+      if (currentStudent) {
+        selected.textContent = currentStudent;
+      }
+    }
+
+    function renderStudentInputs() {
+      studentInputsDiv.innerHTML = "";
+      const students = JSON.parse(localStorage.getItem("listOfStudents") || "[]");
+
+      students.forEach((name, idx) => addStudentInput(name, idx));
+      addStudentInput("", students.length);
+    }
+
+    function capitalizeWords(str) {
+      return str
+        .toLowerCase()
+        .split(" ")
+        .filter(Boolean)
+        .map((w) => w[0].toUpperCase() + w.slice(1))
+        .join(" ");
+    }
+
+    function addStudentInput(value = "", index) {
+      const row = document.createElement("div");
+      row.className = "student-row";
+
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = value;
+      input.placeholder = "Add another student";
+
+      const removeBtn = document.createElement("button");
+      removeBtn.textContent = "❌";
+      removeBtn.className = "remove-btn";
+
+      removeBtn.addEventListener("click", () => {
+        let list = JSON.parse(localStorage.getItem("listOfStudents") || "[]");
+        list.splice(index, 1);
+        localStorage.setItem("listOfStudents", JSON.stringify(list));
+        renderStudentInputs();
+        loadStudents();
+      });
+
+      // typing = save only (no re-render)
+      input.addEventListener("input", () => {
+        let list = JSON.parse(localStorage.getItem("listOfStudents") || "[]");
+        list[index] = input.value;
+        localStorage.setItem("listOfStudents", JSON.stringify(list));
+      });
+
+      // blur = format + re-render
+      input.addEventListener("blur", () => {
+        let list = JSON.parse(localStorage.getItem("listOfStudents") || "[]");
+        let rawValue = input.value.trim();
+
+        if (!rawValue) {
+          list.splice(index, 1);
+        } else {
+          const formatted = capitalizeWords(rawValue);
+
+          const duplicate = list.some((n, i) => i !== index && n.toLowerCase() === formatted.toLowerCase());
+          if (duplicate) {
+            input.style.border = "2px solid red";
+            return;
+          }
+
+          list[index] = formatted;
+        }
+
+        localStorage.setItem("listOfStudents", JSON.stringify(list));
+        renderStudentInputs();
+        loadStudents();
+      });
+
+      row.appendChild(input);
+      if (value) row.appendChild(removeBtn);
+      studentInputsDiv.appendChild(row);
+    }
+
+    manageBtn.addEventListener("click", () => {
+      popup.classList.add("open");
+      renderStudentInputs();
+    });
+
+    closePopup.addEventListener("click", () => {
+      popup.classList.remove("open");
+      loadStudents();
+    });
+
+    document.addEventListener("DOMContentLoaded", loadStudents);
+  </script>
+</body>
+
+</html>
