@@ -1,236 +1,392 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Daily Log</title>
-  <style>
-    body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; }
-    h1 { text-align: center; }
-    #studentBox {
-      text-align: center;
-      font-size: 1.2rem;
-      margin-bottom: 0.2rem;
-      font-weight: bold;
-      color: #444;
-    }
-    #noteBox {
-      text-align: center;
-      font-size: 1rem;
-      margin-bottom: 1rem;
-      color: #777;
-    }
-    #scoreBox {
-      text-align: center;
-      font-size: 1.5rem;
-      font-weight: bold;
-      margin: 20px 0;
-      padding: 10px;
-      border: 2px solid #333;
-      border-radius: 10px;
-    }
-    .field { display: flex; align-items: center; margin: 10px 0; }
-    .field label { flex: 1; }
-    .field input[type="number"] { width: 80px; text-align: center; font-size: 1.1rem; }
-    .field button { margin: 0 5px; padding: 4px 10px; }
-    .slider-value { margin-left: 10px; min-width: 30px; text-align: center; }
-    #loadFromClipboard {
-      display: block;
-      margin: 10px auto;
-      padding: 10px 15px;
-      font-size: 1rem;
-      border: 1px solid #444;
-      border-radius: 6px;
-      background: #f5f5f5;
-      cursor: pointer;
-    }
-  </style>
-</head>
-<body>
-  <h1>Daily Log</h1>
-  <div id="studentBox">Detecting current student...</div>
-  <div id="noteBox"></div>
-  <button id="loadFromClipboard" style="display:none;">📋 Paste Schedule from Clipboard</button>
-  <div id="scoreBox">Score: 50</div>
-
-  <div class="field">
-    <label>Small Mistakes:</label>
-    <button onclick="step(this,-1)">-</button>
-    <input type="number" name="smallMistakes" value="0" min="0" data-type="smallMistakes">
-    <button onclick="step(this,1)">+</button>
-  </div>
-  <div class="field">
-    <label>Big Mistakes:</label>
-    <button onclick="step(this,-1)">-</button>
-    <input type="number" name="bigMistakes" value="0" min="0" data-type="bigMistakes">
-    <button onclick="step(this,1)">+</button>
-  </div>
-
-  <div class="field">
-    <label>Corrected Mistakes:</label>
-    <button onclick="step(this,-1)">-</button>
-    <input type="number" name="correctedMistakes" value="0" min="0" data-type="correctedMistakes">
-    <button onclick="step(this,1)">+</button>
-  </div>
-  <div class="field">
-    <label>New Learning:</label>
-    <button onclick="step(this,-1)">-</button>
-    <input type="number" name="newLearnings" value="0" min="0" data-type="newLearnings">
-    <button onclick="step(this,1)">+</button>
-  </div>
-
-  <div class="field">
-    <label>Behaviour:</label>
-    <input type="range" name="behaviour" min="-2" max="2" value="0" step="1" data-type="neutral">
-    <span class="slider-value">0</span>
-  </div>
-  <div class="field">
-    <label>Interaction:</label>
-    <input type="range" name="interaction" min="-2" max="2" value="0" step="1" data-type="neutral">
-    <span class="slider-value">0</span>
-  </div>
-  <div class="field">
-    <label>Focus:</label>
-    <input type="range" name="focus" min="-2" max="2" value="0" step="1" data-type="neutral">
-    <span class="slider-value">0</span>
-  </div>
-
-  <script src="currentStudentFinder.js"></script>
-  <script>
-    let currentStudent = "";
-    const today = new Date().toISOString().split("T")[0];
-
-    // Stepper buttons
-    function step(btn, change) {
-      let input = btn.parentElement.querySelector("input[type='number']");
-      input.value = Math.max(0, Number(input.value) + change);
-      triggerUpdate();
-    }
-
-    function updateSliderValue(slider) {
-      slider.nextElementSibling.textContent = slider.value;
-      triggerUpdate();
-    }
-
-    // Score calculation
-    function updateScore() {
-      let base = 50;
-      document.querySelectorAll("input").forEach(inp => {
-        let val = Number(inp.value);
-        let type = inp.dataset.type;
-
-        if (type === "smallMistakes") base += val * -5;
-        if (type === "bigMistakes") base += val * -10;
-        if (type === "correctedMistakes") base += val * 10;
-        if (type === "newLearnings") base += val * 10;
-        if (type === "neutral") base += val * 5;
-      });
-      document.getElementById("scoreBox").textContent = "Score: " + base;
-      return base;
-    }
-
-    // Save log
-    function saveDailyLog(score, data) {
-      if (!currentStudent) return;
-      let logs = JSON.parse(localStorage.getItem("dailyLogs") || "[]");
-      const idx = logs.findIndex((l) => l.student === currentStudent && l.date === today);
-
-      if (idx !== -1) {
-        logs[idx].finalScore = score;
-        logs[idx].data = data;
-      } else {
-        logs.push({
-          student: currentStudent,
-          date: today,
-          baseScore: 50,
-          finalScore: score,
-          data
-        });
+  <head>
+    <meta charset="UTF-8" />
+    <title>Daily Log</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        cursor: default;
+        user-select: none;
+        box-sizing: border-box;
       }
-      localStorage.setItem("dailyLogs", JSON.stringify(logs));
-    }
 
-    // Collect data and save
-    function triggerUpdate() {
-      let data = {};
-      document.querySelectorAll("input").forEach(inp => {
-        data[inp.name] = inp.value === "" ? "0" : inp.value;
-      });
-      const score = updateScore();
-      saveDailyLog(score, data);
-    }
-
-    // Load existing log if available
-    function loadExistingLog() {
-      if (!currentStudent) return;
-      let logs = JSON.parse(localStorage.getItem("dailyLogs") || "[]");
-      const entry = logs.find((l) => l.student === currentStudent && l.date === today);
-      
-      if (entry) {
-        document.querySelectorAll("input").forEach(inp => {
-          if (entry.data[inp.name] !== undefined) {
-            inp.value = entry.data[inp.name];
-            if (inp.type === "range") {
-              inp.nextElementSibling.textContent = inp.value;
-            }
-          }
-        });
-      } else {
-        document.querySelectorAll("input[type='number']").forEach(inp => inp.value = 0);
-        document.querySelectorAll("input[type='range']").forEach(inp => {
-          inp.value = 0;
-          inp.nextElementSibling.textContent = "0";
-        });
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        font-family: "Quicksand", sans-serif;
+        background: radial-gradient(circle at top left, #101010, #0c0c0c 80%);
+        color: #f4f4f4;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        overflow-x: hidden;
+        position: relative;
+        padding-right: 0.5rem;
       }
-      updateScore();
-    }
 
-    // Load schedule from clipboard
-    async function loadScheduleFromClipboard() {
-      try {
-        const text = await navigator.clipboard.readText();
-        localStorage.setItem("regularSchedule", text);
-        document.getElementById("loadFromClipboard").style.display = "none";
-        initSchedule(); // re-run setup
-      } catch (err) {
-        alert("❌ Failed to read clipboard: " + err);
+      body::before,
+      body::after {
+        content: "";
+        position: fixed;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+            ellipse at 30% 30%,
+            rgba(255, 235, 59, 0.06),
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse at 70% 80%,
+            rgba(0, 255, 204, 0.04),
+            transparent 70%
+          );
+        animation: bgMove 40s infinite linear;
+        z-index: 0;
+        pointer-events: none;
       }
-    }
+      body::after {
+        animation-direction: reverse;
+        opacity: 0.6;
+        filter: blur(20px);
+      }
 
-    // Init schedule & student detection
-    function initSchedule() {
-      const savedSchedule = localStorage.getItem("regularSchedule");
-      if (savedSchedule) {
-        const info = getCurrentOrNextClass(savedSchedule);
-        currentStudent = info.status === "current" ? info.student : "";
+      @keyframes bgMove {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
 
-        if (info.status === "current") {
-          document.getElementById("studentBox").textContent = "👤 " + currentStudent;
-        } else if (info.status === "next") {
-          document.getElementById("studentBox").textContent = "—";
+      #daily-log {
+        width: 100%;
+        max-width: 320px;
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(16px);
+        border-radius: 20px;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 90vh;
+        position: relative;
+        z-index: 1;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+      }
+
+      .section { display: flex; flex-direction: column; gap: 0.2rem; }
+
+      .logo-row { display: flex; justify-content: center; margin-bottom: 0.2rem; }
+      #logo {
+        width: 100%;
+        max-width: 200px;
+        height: auto;
+        filter: invert(70%) sepia(100%) saturate(7500%) hue-rotate(158deg)
+          drop-shadow(0 0 100px #00ffc8) drop-shadow(0 0 2554px #00fcc5)
+          drop-shadow(0 0 1px #000000);
+        margin-bottom: 12px;
+      }
+
+      .top-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.2rem;
+      }
+      #studentBox {
+        font-weight: bold;
+        color: #00ffc8;
+        flex: 1;
+      }
+      #viewReportBtn {
+        padding: 4px 8px;
+        font-weight: bold;
+        background: #00ffc8;
+        color: #111;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      #viewReportBtn:hover { background: #0af5d6; }
+
+      #noteBox { font-size: 0.75rem; color: #aaa; margin: 0.2rem 0; line-height: 1.1rem; }
+
+      #scoreBox {
+        text-align: center;
+        font-size: 0.95rem;
+        font-weight: bold;
+        padding: 5px 0;
+        border-radius: 12px;
+        background: rgba(0, 255, 200, 0.05);
+        border: 1px solid #00ffc8;
+        color: #00ffc8;
+        margin-bottom: 0.2rem;
+      }
+
+      .field {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        height: 32px;
+        margin-bottom: 0.2rem;
+      }
+      .field button.add {
+        flex: 1.5;
+        background: linear-gradient(145deg, #1a1a1a, #121212);
+        border: 1px solid #00ffc8;
+        color: #00ffc8;
+        font-size: 0.85rem;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      .field button.add:hover { background: #0af5d6; color: #111; }
+
+      .field .value-btn {
+        width: 36px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 1.05rem;
+        background: #121212;
+        border: 1px solid #00ffc8;
+        color: #00ffc8;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      .field .value-btn:hover { background: #0af5d6; color: #111; }
+
+      .slider-container { margin: 0.3rem 0; }
+      .slider-label {
+        display: flex;
+        justify-content: space-between;
+        font-weight: bold;
+        font-size: 0.85rem;
+        color: #f4f4f4;
+      }
+      .slider-value {
+        font-weight: bold;
+        font-size: 1.05rem;
+        background: #121212;
+        border: 1px solid #00ffc8;
+        color: #00ffc8;
+        border-radius: 10px;
+        cursor: pointer;
+        padding-inline: 12px;
+      }
+
+      input[type="range"] {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 8px;
+        border-radius: 5px;
+        background: #1a1a1a;
+        outline: none;
+        margin-top: 2px;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #00ffc8;
+        border: 2px solid #0af5d6;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      input[type="range"]::-webkit-slider-thumb:hover { background: #0af5d6; }
+      input[type="range"]::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #00ffc8;
+        border: 2px solid #0af5d6;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="sparkle-layer"></div>
+
+    <div id="daily-log">
+      <!-- Section 1: Logo + student info -->
+      <div class="section">
+        <div class="logo-row">
+          <img
+            src="https://learnquraan.co.uk/vendor/local/imgs/hr-logo-white.svg"
+            id="logo"
+            alt="Logo"
+            style="width: 100%; max-width: 200px; filter: drop-shadow(0 0 4px #00ffc8);"
+          />
+        </div>
+        <div class="top-row">
+          <div id="studentBox">—</div>
+          <button id="viewReportBtn">📊</button>
+        </div>
+        <div id="noteBox"></div>
+      </div>
+
+      <!-- SCORE SECTION (hide if no current class) -->
+      <div id="scoreSection">
+        <div id="scoreBox">Score: 50</div>
+
+        <!-- Counters -->
+        <div class="section">
+          <div class="field">
+            <button class="add" onclick="stepField('smallMistakes',1)">✏️ Oopsies</button>
+            <button class="value-btn" onclick="stepField('smallMistakes',-1)" id="smallMistakesValue">0</button>
+          </div>
+          <div class="field">
+            <button class="add" onclick="stepField('bigMistakes',1)">📕 Uh-ohs</button>
+            <button class="value-btn" onclick="stepField('bigMistakes',-1)" id="bigMistakesValue">0</button>
+          </div>
+          <div class="field">
+            <button class="add" onclick="stepField('correctedMistakes',1)">✅ Fix-its</button>
+            <button class="value-btn" onclick="stepField('correctedMistakes',-1)" id="correctedMistakesValue">0</button>
+          </div>
+          <div class="field">
+            <button class="add" onclick="stepField('newLearnings',1)">🌟 Stars</button>
+            <button class="value-btn" onclick="stepField('newLearnings',-1)" id="newLearningsValue">0</button>
+          </div>
+        </div>
+
+        <!-- Sliders -->
+        <div class="section">
+          <div class="slider-container">
+            <div class="slider-label">😊 Behaviour <span class="slider-value">0</span></div>
+            <input type="range" name="behaviour" min="-2" max="2" value="0" step="1" data-type="neutral" oninput="updateSliderValue(this)" />
+          </div>
+          <div class="slider-container">
+            <div class="slider-label">💬 Interaction <span class="slider-value">0</span></div>
+            <input type="range" name="interaction" min="-2" max="2" value="0" step="1" data-type="neutral" oninput="updateSliderValue(this)" />
+          </div>
+          <div class="slider-container">
+            <div class="slider-label">🎯 Focus <span class="slider-value">0</span></div>
+            <input type="range" name="focus" min="-2" max="2" value="0" step="1" data-type="neutral" oninput="updateSliderValue(this)" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="currentStudentFinder.js"></script>
+    <script>
+      let currentStudent = "";
+      const today = new Date().toISOString().split("T")[0];
+
+      function stepField(name, change) {
+        const btn = document.getElementById(name + "Value");
+        let val = Number(btn.textContent) + change;
+        btn.textContent = Math.max(0, val);
+        triggerUpdate();
+      }
+
+      function updateSliderValue(slider) {
+        slider.parentElement.querySelector(".slider-value").textContent = slider.value;
+        triggerUpdate();
+      }
+
+      function updateScore() {
+        let base = 50;
+        document.querySelectorAll(".value-btn").forEach((btn) => {
+          let val = Number(btn.textContent);
+          let type = btn.id.replace("Value", "");
+          if (type === "smallMistakes") base += val * -5;
+          if (type === "bigMistakes") base += val * -10;
+          if (type === "correctedMistakes") base += val * 10;
+          if (type === "newLearnings") base += val * 10;
+        });
+        document.querySelectorAll("input[type=range]").forEach((inp) => { base += Number(inp.value) * 5; });
+        document.getElementById("scoreBox").textContent = "Score: " + base;
+        return base;
+      }
+
+      function saveDailyLog(score, data) {
+        if (!currentStudent) return;
+        let logs = JSON.parse(localStorage.getItem("dailyLogs") || "[]");
+        const idx = logs.findIndex(l => l.student === currentStudent && l.date === today);
+        if (idx !== -1) {
+          logs[idx].finalScore = score;
+          logs[idx].data = data;
         } else {
-          document.getElementById("studentBox").textContent = "⚠️ No student";
+          logs.push({ student: currentStudent, date: today, baseScore: 50, finalScore: score, data });
         }
-        document.getElementById("noteBox").textContent = info.note;
-      } else {
-        document.getElementById("studentBox").textContent = "⚠️ No schedule found.";
-        document.getElementById("noteBox").textContent = "";
-        document.getElementById("loadFromClipboard").style.display = "block";
+        localStorage.setItem("dailyLogs", JSON.stringify(logs));
       }
-      loadExistingLog();
-    }
 
-    // Init
-    window.onload = () => {
-      document.getElementById("loadFromClipboard").addEventListener("click", loadScheduleFromClipboard);
+      function triggerUpdate() {
+        let data = {};
+        document.querySelectorAll(".value-btn").forEach((btn) => data[btn.id.replace("Value", "")] = btn.textContent || "0");
+        document.querySelectorAll("input[type=range]").forEach((inp) => data[inp.name] = inp.value);
+        updateScore();
+        saveDailyLog(updateScore(), data);
+      }
 
-      initSchedule();
+      function loadExistingLog() {
+        if (!currentStudent) return;
+        let logs = JSON.parse(localStorage.getItem("dailyLogs") || "[]");
+        const entry = logs.find(l => l.student === currentStudent && l.date === today);
+        if (entry) {
+          Object.keys(entry.data).forEach((key) => {
+            if (document.getElementById(key + "Value")) document.getElementById(key + "Value").textContent = entry.data[key];
+            const slider = document.querySelector(`input[name='${key}']`);
+            if (slider) slider.value = entry.data[key], slider.parentElement.querySelector(".slider-value").textContent = slider.value;
+          });
+        } else {
+          document.querySelectorAll(".value-btn").forEach((btn) => btn.textContent = "0");
+          document.querySelectorAll("input[type=range]").forEach((slider) => slider.value = 0);
+        }
+        updateScore();
+      }
 
-      // attach auto-save listeners
-      document.querySelectorAll("input").forEach(inp => {
-        inp.addEventListener("input", triggerUpdate);
-        inp.addEventListener("change", triggerUpdate);
-      });
-    };
-  </script>
-</body>
+      function initSchedule() {
+        const savedSchedule = localStorage.getItem("regularSchedule");
+        const studentBox = document.getElementById("studentBox");
+        const scoreSection = document.getElementById("scoreSection");
+
+        if (savedSchedule) {
+          const info = getCurrentOrNextClass(savedSchedule);
+          currentStudent = info.status === "current" ? info.student : "";
+          studentBox.textContent = currentStudent || "—";
+          document.getElementById("noteBox").textContent = info.note;
+        } else {
+          studentBox.textContent = "⚠️ No schedule";
+          document.getElementById("noteBox").textContent = "";
+
+          studentBox.style.cursor = "pointer";
+          studentBox.onclick = async () => {
+            try {
+              const text = await navigator.clipboard.readText();
+              if (text) {
+                localStorage.setItem("regularSchedule", text);
+                const info = getCurrentOrNextClass(text);
+                currentStudent = info.status === "current" ? info.student : "";
+                studentBox.textContent = currentStudent || "—";
+                document.getElementById("noteBox").textContent = info.note;
+                loadExistingLog();
+                studentBox.onclick = null;
+                studentBox.style.cursor = "default";
+                scoreSection.style.display = currentStudent ? "block" : "none";
+              } else alert("Clipboard is empty! Copy your schedule first.");
+            } catch (err) {
+              console.error("Failed to read clipboard:", err);
+              alert("Clipboard access denied or unsupported!");
+            }
+          };
+        }
+
+        // toggle score section visibility
+        scoreSection.style.display = currentStudent ? "block" : "none";
+
+        loadExistingLog();
+      }
+
+      window.onload = () => {
+        initSchedule();
+        document.getElementById("viewReportBtn").addEventListener("click", () => window.location.href = "studentReport.html");
+      };
+    </script>
+  </body>
 </html>
