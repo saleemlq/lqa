@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Student Report — Progress Graph</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      cursor: default;
+      user-select: none;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Quicksand", sans-serif;
+      background: radial-gradient(circle at top left, #101010, #0c0c0c 80%);
+      color: #f4f4f4;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(ellipse at 30% 30%, rgba(255, 235, 59, 0.06), transparent 60%),
+        radial-gradient(ellipse at 70% 80%, rgba(0, 255, 204, 0.04), transparent 70%);
+      animation: bgMove 40s infinite linear;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body::after {
+      animation-direction: reverse;
+      opacity: 0.6;
+      filter: blur(20px);
+    }
+
+    @keyframes bgMove {
+      0% { transform: rotate(0deg) scale(1); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    .report-card {
+      width: 850px;
+      max-width: 95%;
+      background: rgba(25, 25, 25, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 0 18px rgba(0, 255, 200, 0.15);
+      z-index: 1;
+    }
+
+    h1 {
+      margin: 0 0 1rem;
+      font-size: 1.3rem;
+      color: #ffe761;
+      text-align: center;
+    }
+
+    .controls {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
+    select {
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      border: none;
+      background: #222;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.9rem;
+      outline: none;
+      box-shadow: 0 0 6px rgba(0, 255, 200, 0.2);
+    }
+
+    .chart-container {
+      position: relative;
+      width: 100%;
+      height: 360px;
+    }
+  </style>
+</head>
+<body>
+  <div class="report-card">
+    <h1 id="chartHeading">Student Progress Report 📊</h1>
+    <div class="controls">
+      <select id="studentSelect"></select>
+      <select id="fieldSelect"></select>
+      <select id="rangeSelect">
+        <option value="all">all classes</option>
+        <option value="last30">last 30 classes</option>
+        <option value="thisMonth">this month</option>
+        <option value="last10">last 10 classes</option>
+      </select>
+    </div>
+    <div class="chart-container">
+      <canvas id="progressChart"></canvas>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const fieldSelect = document.getElementById("fieldSelect");
+    const studentSelect = document.getElementById("studentSelect");
+    const rangeSelect = document.getElementById("rangeSelect");
+    const chartHeading = document.getElementById("chartHeading");
+
+    const fields = ["finalScore","smallMistakes","bigMistakes","correctedMistakes","newLearnings","behaviour","interaction","focus"];
+    fields.forEach(f => {
+      const opt = document.createElement("option");
+      opt.value = f;
+      opt.textContent = f.replace(/([A-Z])/g, " $1").toLowerCase();
+      fieldSelect.appendChild(opt);
+    });
+
+    const ctx = document.getElementById("progressChart").getContext("2d");
+    let chart;
+
+    const colors = [
+      "rgba(255, 231, 97, 0.8)",
+      "rgba(0, 255, 200, 0.7)",
+      "rgba(124, 199, 255, 0.7)",
+      "rgba(255, 122, 182, 0.7)",
+      "rgba(126, 231, 199, 0.7)",
+      "rgba(255, 207, 86, 0.8)"
+    ];
+
+    function getLogs() {
+      return JSON.parse(localStorage.getItem("dailyLogs")) || [];
+    }
+
+    function rebuildStudentList() {
+      const dailyLogs = getLogs();
+      const students = [...new Set(dailyLogs.map(l => l.student))];
+      studentSelect.innerHTML = "";
+      students.forEach(s => {
+        const opt = document.createElement("option");
+        opt.value = s;
+        opt.textContent = s;
+        studentSelect.appendChild(opt);
+      });
+    }
+
+    function filterLogs(logs, range) {
+      const sorted = logs.sort((a,b) => new Date(a.date) - new Date(b.date));
+      if (range === "last10") return sorted.slice(-10);
+      if (range === "last30") return sorted.slice(-30);
+      if (range === "thisMonth") {
+        const month = new Date().getMonth();
+        return sorted.filter(l => new Date(l.date).getMonth() === month);
+      }
+      return sorted;
+    }
+
+    function updateHeading(student, field, range) {
+      const rangeLabels = {
+        all: "all classes",
+        last30: "last 30 classes",
+        thisMonth: "this month",
+        last10: "last 10 classes"
+      };
+      chartHeading.textContent = `${student}'s ${field.replace(/([A-Z])/g, " $1").toLowerCase()} for ${rangeLabels[range]}`;
+    }
+
+    function updateChart() {
+      const dailyLogs = getLogs();
+      rebuildStudentList();
+
+      let activeStudent = localStorage.getItem("activeStudent");
+      if (!activeStudent || !dailyLogs.some(l => l.student === activeStudent)) {
+        activeStudent = studentSelect.options[0]?.value || "";
+        localStorage.setItem("activeStudent", activeStudent);
+      }
+
+      studentSelect.value = activeStudent;
+      const student = activeStudent;
+      const field = fieldSelect.value || "finalScore";
+      const range = rangeSelect.value || "last10";
+
+      let logs = dailyLogs.filter(l => l.student === student);
+      logs = filterLogs(logs, range);
+
+      const labels = logs.map(l => new Date(l.date).toLocaleDateString("en-US",{month:"short", day:"numeric"}));
+      const values = logs.map(l => field === "finalScore" ? l.finalScore : parseInt(l.data[field]));
+
+      if (chart) chart.destroy();
+      chart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [{
+            label: field,
+            data: values,
+            backgroundColor: labels.map((_,i)=>colors[i%colors.length]),
+            borderRadius: 10,
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { color: "#ccc", stepSize: 1, precision: 0 },
+              grid: { color: "rgba(255,255,255,0.05)" }
+            },
+            x: {
+              ticks: { color: "#ddd" },
+              grid: { display: false }
+            }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: ctx => `${ctx.dataset.label}: ${ctx.raw}`
+              },
+              backgroundColor: "#1c1c1c",
+              titleColor: "#ffe761",
+              bodyColor: "#fff",
+              borderColor: "#00ffc8",
+              borderWidth: 1,
+              padding: 10
+            }
+          },
+          animation: { duration: 1600, easing: "easeOutElastic" }
+        }
+      });
+
+      updateHeading(student, field, range);
+    }
+
+    studentSelect.addEventListener("change", () => {
+      localStorage.setItem("activeStudent", studentSelect.value);
+      updateChart();
+    });
+    fieldSelect.addEventListener("change", updateChart);
+    rangeSelect.addEventListener("change", updateChart);
+
+    window.addEventListener("storage", updateChart);
+
+    // Initial load defaults
+    fieldSelect.value = "finalScore";
+    rangeSelect.value = "last10";
+    updateChart();
+  </script>
+</body>
+</html>
