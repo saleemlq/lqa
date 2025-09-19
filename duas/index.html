@@ -511,11 +511,7 @@
     function isoDate(d) { return d.toISOString().split('T')[0]; }
 
     // Load data
-    let students = JSON.parse(localStorage.getItem(STORAGE.students) || JSON.stringify([
-      "Haniya Chaudhry","Aamir Ahmed","Sara Iqbal","Samba Njie",
-      "Nael Ibrahim","Mohammad Raiyaan","Taha Chaudhry","Aryan Ali",
-      "Zunairah Ayaat","Shampoo"
-    ]));
+    let students = JSON.parse(localStorage.getItem(STORAGE.students) || JSON.stringify([]));
 
     let remoteDuas = window.__DUAS_DATA__ || [];
     let duas = JSON.parse(localStorage.getItem(STORAGE.duas) || 'null') || remoteDuas;
