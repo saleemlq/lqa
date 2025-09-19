@@ -1,0 +1,5 @@
+export const duas = [
+    { id:'d1', name:'Morning Dua', arabic:'ٱللّٰهُـمَّ بِكَ أَصْبَحْنَا', translation:'O Allah, by You we enter the morning.' },
+    { id:'d2', name:'Before Sleep', arabic:'بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا', translation:'In Your name O Allah I die and I live.' },
+    { id:'d3', name:'Travel Dua', arabic:'سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا', translation:'Glory be to Him Who has subjected [these to us].' }
+  ];
