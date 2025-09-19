@@ -1,4 +1,4 @@
-export const duas = [
+window.__DUAS_DATA__ = [
   { id:'d1', name:'Evening Dua', arabic:'ٱللّٰهُـمَّ بِكَ أَمْسَيْنَا', translation:'O Allah, by You we enter the evening.' },
   { id:'d2', name:'Before Eating', arabic:'بِسْمِ اللَّهِ وَعَلَى بَرَكَةِ اللَّهِ', translation:'In the name of Allah and with the blessings of Allah.' },
   { id:'d3', name:'After Eating', arabic:'ٱلْـحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا', translation:'All praise is for Allah who fed us and gave us drink.' },
