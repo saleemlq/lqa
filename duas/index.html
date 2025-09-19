@@ -7,9 +7,8 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="duas.js" defer></script>
 
-  <style>
+<style>
         /* theme matched and refined */
         @import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap");
 
@@ -436,7 +435,6 @@
         <button id="viewDoneBtn" class="btn">Done Duas</button>
         <button id="viewReportBtn" class="btn">Reports</button>
       </div>
-
       <div class="top-right">
         <div class="custom-select-wrapper" id="studentWrapper">
           <div class="custom-select-display" id="studentDisplay">Select student ▾</div>
@@ -452,34 +450,26 @@
       <ul id="duaList" class="dua-list"></ul>
     </div>
 
-    <!-- Dua View Screen -->
+    <!-- Dua Screen -->
     <div id="duaScreen" class="screen">
-      <div class="dua-screen-wrap">
-        <div style="position:relative; width:100%; max-width:900px;">
-          <div class="card-top-right"></div>
-          <h1 id="duaTitle" class="dua-title">Dua Title</h1>
-          <div id="duaArabic" class="dua-arabic">اَلسَّلَامُ عَلَيْكُمْ</div>
-          <div id="duaTranslation" class="dua-translation">Translation here...</div>
-          <div class="controls">
-            <button id="startBtn" class="btn">Start</button>
-            <button id="skipBtn" class="btn">Skip</button>
-            <button id="markDoneBtn" class="btn positive">Mark as Done</button>
-          </div>
-          <div style="margin-top:12px; display:flex; justify-content:center; gap:12px;">
-            <button id="prevDuaBtn" class="btn">◀ Prev</button>
-            <div class="muted" id="duaIndexInfo">1 / 10</div>
-            <button id="nextDuaBtn" class="btn">Next ▶</button>
-          </div>
-        </div>
+      <h1 id="duaTitle" class="dua-title">Dua Title</h1>
+      <div id="duaArabic" class="dua-arabic"></div>
+      <div id="duaTranslation" class="dua-translation"></div>
+      <div class="controls">
+        <button id="startBtn" class="btn">Start</button>
+        <button id="skipBtn" class="btn">Skip</button>
+        <button id="markDoneBtn" class="btn positive">Mark as Done</button>
+      </div>
+      <div style="margin-top:12px; display:flex; justify-content:center; gap:12px;">
+        <button id="prevDuaBtn" class="btn">◀ Prev</button>
+        <div class="muted" id="duaIndexInfo"></div>
+        <button id="nextDuaBtn" class="btn">Next ▶</button>
       </div>
     </div>
 
     <!-- Done Screen -->
     <div id="doneScreen" class="screen">
-      <div class="done-header">
-        <h2 id="doneHeaderTitle">Done Duas</h2>
-        <div class="count-badge">Applied today: <span id="appliedCount">0</span> / <span id="totalDoneCount">0</span></div>
-      </div>
+      <h2>Done Duas</h2>
       <div class="muted">Date: <span id="doneDate"></span></div>
       <div id="doneList" class="done-list" style="margin-top:12px;"></div>
     </div>
@@ -494,234 +484,139 @@
     </div>
   </div>
 
+  <!-- Duas hardcoded here -->
+  <script>
+    const DUAS = [
+      { id:'d1', name:'Evening Dua', arabic:'ٱللّٰهُـمَّ بِكَ أَمْسَيْنَا', translation:'O Allah, by You we enter the evening.' },
+      { id:'d2', name:'Before Eating', arabic:'بِسْمِ اللَّهِ وَعَلَى بَرَكَةِ اللَّهِ', translation:'In the name of Allah and with the blessings of Allah.' },
+      { id:'d3', name:'After Eating', arabic:'ٱلْـحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا', translation:'All praise is for Allah who fed us and gave us drink.' },
+      { id:'d4', name:'Before Drinking Milk', arabic:'ٱللَّهُمَّ بَارِكْ لَنَا فِيهِ وَزِدْنَا مِنْهُ', translation:'O Allah, bless it for us and increase it for us.' },
+      { id:'d5', name:'After Drinking Water', arabic:'ٱلْـحَمْدُ لِلَّهِ الَّذِي سَقَانَا عَذْبًا فُرَاتًا', translation:'All praise is for Allah who gave us sweet fresh water.' },
+      { id:'d6', name:'When Sneezing', arabic:'ٱلْـحَمْدُ لِلَّهِ', translation:'All praise is for Allah.' },
+      { id:'d7', name:'Response to Sneezing', arabic:'يَرْحَمُكَ اللَّهُ', translation:'May Allah have mercy on you.' },
+      { id:'d8', name:'Sneezer’s Reply', arabic:'يَهْدِيكُمُ اللَّهُ وَيُصْلِحُ بَالَكُمْ', translation:'May Allah guide you and set your affairs right.' },
+      { id:'d9', name:'Leaving the House', arabic:'بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ', translation:'In the name of Allah, I place my trust in Allah.' },
+      { id:'d10', name:'Entering the House', arabic:'بِسْمِ اللَّهِ وَلَجْنَا وَبِسْمِ اللَّهِ خَرَجْنَا', translation:'In the name of Allah we enter, and in the name of Allah we leave.' },
+      { id:'d11', name:'Before Toilet', arabic:'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْخُبْثِ وَالْخَبَائِثِ', translation:'O Allah, I seek refuge with You from male and female devils.' },
+      { id:'d12', name:'After Toilet', arabic:'غُفْرَانَكَ', translation:'I ask You for forgiveness.' },
+      { id:'d13', name:'Wearing New Clothes', arabic:'ٱللَّهُمَّ لَكَ ٱلْـحَمْدُ أَنْتَ كَسَوْتَنِيهِ', translation:'O Allah, all praise is to You, You clothed me with this.' },
+      { id:'d14', name:'Looking in the Mirror', arabic:'ٱللَّهُمَّ أَنْتَ حَسَّنْتَ خَلْقِي فَحَسِّنْ خُلُقِي', translation:'O Allah, just as You have beautified my appearance, beautify my character.' },
+      { id:'d15', name:'Dua for Parents', arabic:'رَبِّ ٱرْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا', translation:'My Lord, have mercy on them as they raised me when I was small.' },
+      { id:'d16', name:'Dua for Knowledge', arabic:'رَبِّ زِدْنِي عِلْمًا', translation:'My Lord, increase me in knowledge.' },
+      { id:'d17', name:'Asking for Mercy', arabic:'رَبِّ اغْفِرْ وَارْحَمْ', translation:'My Lord, forgive and have mercy.' },
+      { id:'d18', name:'Asking for Guidance', arabic:'ٱللَّهُمَّ ٱهْدِنَا فِيمَنْ هَدَيْتَ', translation:'O Allah, guide us among those You have guided.' },
+      { id:'d19', name:'Seeking Forgiveness', arabic:'أَسْتَغْفِرُ ٱللَّهَ وَأَتُوبُ إِلَيْهِ', translation:'I seek forgiveness from Allah and repent to Him.' },
+      { id:'d20', name:'Protection from Evil', arabic:'أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ', translation:'I seek refuge in Allah’s perfect words from the evil of what He created.' }
+    ];
+  </script>
 
   <script>
-  
     const STORAGE = {
       students: 'listOfStudents',
       duas: 'duasList',
       progress: 'duaProgress_v1',
       daily: 'dailyProgress_v1'
     };
-    function $(s) { return document.querySelector(s) }
-    function isoDate(d) { return d.toISOString().split('T')[0]; }
+    function $(s){return document.querySelector(s)}
+    function isoDate(d){return d.toISOString().split('T')[0]}
 
     // Load data
-    let students = JSON.parse(localStorage.getItem(STORAGE.students) || JSON.stringify([]));
-
-    let remoteDuas = window.__DUAS_DATA__ || [];
-    let duas = JSON.parse(localStorage.getItem(STORAGE.duas) || 'null') || remoteDuas;
-    if (!duas || duas.length === 0) {
-      duas = remoteDuas;
+    let students = JSON.parse(localStorage.getItem(STORAGE.students) || '[]');
+    let duas = JSON.parse(localStorage.getItem(STORAGE.duas) || 'null') || DUAS;
+    if(!duas || duas.length===0){
+      duas=DUAS;
       localStorage.setItem(STORAGE.duas, JSON.stringify(duas));
     }
-
     let duaProgress = JSON.parse(localStorage.getItem(STORAGE.progress) || '{}');
     let dailyProgress = JSON.parse(localStorage.getItem(STORAGE.daily) || '{}');
+    let currentStudent=null, currentDuaIndex=0;
 
-    // UI refs
-    const studentWrapper = $('#studentWrapper');
-    const studentDisplay = $('#studentDisplay');
-    const studentOptions = $('#studentOptions');
-    const viewDoneBtn = $('#viewDoneBtn');
-    const backToListBtn = $('#backToListBtn');
-    const viewReportBtn = $('#viewReportBtn');
-
-    const duaListEl = $('#duaList');
-    const listScreen = $('#listScreen');
-    const duaScreen = $('#duaScreen');
-    const doneScreen = $('#doneScreen');
-    const reportScreen = $('#reportScreen');
-
-    const duaTitle = $('#duaTitle');
-    const duaArabic = $('#duaArabic');
-    const duaTranslation = $('#duaTranslation');
-    const startBtn = $('#startBtn');
-    const skipBtn = $('#skipBtn');
-    const markDoneBtn = $('#markDoneBtn');
-    const prevDuaBtn = $('#prevDuaBtn');
-    const nextDuaBtn = $('#nextDuaBtn');
-    const duaIndexInfo = $('#duaIndexInfo');
-
-    const doneDateEl = $('#doneDate');
-    const doneListEl = $('#doneList');
-    const appliedCountEl = $('#appliedCount');
-    const totalDoneCountEl = $('#totalDoneCount');
-
-    const barCanvas = $('#barChart');
-    const pieCanvas = $('#pieChart');
-
-    // state
-    let currentStudent = students[0];
-    let filteredList = [];
-    let currentIndex = 0;
-
-    // helpers
-    function saveProgress() { localStorage.setItem(STORAGE.progress, JSON.stringify(duaProgress)); }
-    function saveDaily() { localStorage.setItem(STORAGE.daily, JSON.stringify(dailyProgress)); }
-    function saveStudents() { localStorage.setItem(STORAGE.students, JSON.stringify(students)); }
-    function saveDuas() { localStorage.setItem(STORAGE.duas, JSON.stringify(duas)); }
-
-    // student dropdown
-    function renderStudentDropdown() {
-      studentOptions.innerHTML = '';
-      students.forEach(s => {
-        const li = document.createElement('li');
-        li.textContent = s;
-        if (s === currentStudent) li.style.fontWeight = '700';
-        li.addEventListener('click', () => { selectStudent(s); studentWrapper.classList.remove('open'); });
-        studentOptions.appendChild(li);
+    // --- UI Render Functions ---
+    function renderStudentDropdown(){
+      const display=$("#studentDisplay"), opts=$("#studentOptions");
+      opts.innerHTML="";
+      students.forEach(stu=>{
+        let li=document.createElement("li");
+        li.textContent=stu;
+        li.onclick=()=>{currentStudent=stu;display.textContent=stu;opts.style.display="none";renderList();};
+        opts.appendChild(li);
       });
-      studentDisplay.textContent = currentStudent + ' ▾';
+      display.onclick=()=>{opts.style.display=opts.style.display==="block"?"none":"block";}
     }
 
-    studentDisplay.addEventListener('click', () => { studentWrapper.classList.toggle('open'); });
-    function selectStudent(name) {
-      currentStudent = name;
-      renderStudentDropdown();
-      renderList();
-      if (document.querySelector('.screen.active') === doneScreen) showDoneList();
-      updateReports();
+    function renderList(){
+      const list=$("#duaList");
+      list.innerHTML="";
+      duas.forEach((dua,i)=>{
+        if(currentStudent && duaProgress[currentStudent]?.done?.includes(dua.id)) return;
+        let li=document.createElement("li");
+        li.textContent=dua.name;
+        li.onclick=()=>openDua(i);
+        list.appendChild(li);
+      });
     }
 
-    function getStateFor(student, duaId) {
-      if (!duaProgress[student]) return 'notstarted';
-      return duaProgress[student][duaId] || 'notstarted';
-    }
-    function setStateFor(student, duaId, state) {
-      if (!duaProgress[student]) duaProgress[student] = {};
-      duaProgress[student][duaId] = state;
-      saveProgress();
+    function openDua(index){
+      currentDuaIndex=index;
+      const dua=duas[index];
+      $("#duaTitle").textContent=dua.name;
+      $("#duaArabic").textContent=dua.arabic;
+      $("#duaTranslation").textContent=dua.translation;
+      $("#duaIndexInfo").textContent=`${index+1} / ${duas.length}`;
+      switchScreen("duaScreen");
     }
 
-    function renderList() {
-      duaListEl.innerHTML = '';
-      filteredList = duas.filter(d => getStateFor(currentStudent, d.id) !== 'done');
-      if (filteredList.length === 0) {
-        duaListEl.innerHTML = '<li class="muted">No available duas (all done)</li>';
-        return;
+    function switchScreen(id){
+      document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+      $("#"+id).classList.add("active");
+    }
+
+    // --- Buttons ---
+    $("#backToListBtn").onclick=()=>switchScreen("listScreen");
+    $("#viewDoneBtn").onclick=()=>{renderDone();switchScreen("doneScreen");};
+    $("#viewReportBtn").onclick=()=>{renderReports();switchScreen("reportScreen");};
+    $("#markDoneBtn").onclick=()=>{
+      if(!currentStudent) return alert("Select student first");
+      duaProgress[currentStudent]=duaProgress[currentStudent]||{done:[]};
+      if(!duaProgress[currentStudent].done.includes(duas[currentDuaIndex].id)){
+        duaProgress[currentStudent].done.push(duas[currentDuaIndex].id);
       }
-      filteredList.forEach((d, idx) => {
-        const li = document.createElement('li');
-        if (getStateFor(currentStudent, d.id) === 'started') li.classList.add('started');
-        li.innerHTML = `<div class="dua-name">${d.name}</div>`;
-        if (getStateFor(currentStudent, d.id) === 'started') {
-          const dot = document.createElement('span'); dot.className = 'progress-dot';
-          li.appendChild(dot);
+      localStorage.setItem(STORAGE.progress,JSON.stringify(duaProgress));
+      renderList();switchScreen("listScreen");
+    };
+    $("#nextDuaBtn").onclick=()=>{if(currentDuaIndex<duas.length-1)openDua(currentDuaIndex+1);}
+    $("#prevDuaBtn").onclick=()=>{if(currentDuaIndex>0)openDua(currentDuaIndex-1);}
+
+    // Done screen
+    function renderDone(){
+      if(!currentStudent)return;
+      $("#doneDate").textContent=isoDate(new Date());
+      const list=$("#doneList");
+      list.innerHTML="";
+      (duaProgress[currentStudent]?.done||[]).forEach(id=>{
+        const dua=duas.find(d=>d.id===id);
+        if(dua){
+          let div=document.createElement("div");
+          div.className="done-item";
+          div.textContent=dua.name;
+          list.appendChild(div);
         }
-        li.addEventListener('click', () => openDuaByIndex(idx));
-        duaListEl.appendChild(li);
       });
-    }
-
-    function showScreen(name) {
-      [listScreen, duaScreen, doneScreen, reportScreen].forEach(s => s.classList.remove('active'));
-      if (name === 'list') listScreen.classList.add('active');
-      if (name === 'dua') duaScreen.classList.add('active');
-      if (name === 'done') doneScreen.classList.add('active');
-      if (name === 'report') reportScreen.classList.add('active');
-    }
-
-    function openDuaByIndex(i) {
-      currentIndex = i;
-      const dua = filteredList[currentIndex];
-      duaTitle.textContent = dua.name;
-      duaArabic.textContent = dua.arabic;
-      duaTranslation.textContent = dua.translation;
-
-      const st = getStateFor(currentStudent, dua.id);
-      if (st === 'notstarted') {
-        startBtn.textContent = 'Start';
-        skipBtn.style.display = 'none';
-        markDoneBtn.style.display = 'none';
-      } else if (st === 'started') {
-        startBtn.textContent = 'Mark as Done';
-        skipBtn.style.display = 'inline-block';
-        markDoneBtn.style.display = 'inline-block';
-      }
-
-      showScreen('dua');
-      updateIndexInfo();
-    }
-
-    startBtn.addEventListener('click', () => {
-      const dua = filteredList[currentIndex];
-      const st = getStateFor(currentStudent, dua.id);
-      if (st === 'notstarted') {
-        setStateFor(currentStudent, dua.id, 'started');
-        openDuaByIndex(currentIndex);
-        renderList();
-      } else if (st === 'started') {
-        markThisDone();
-      }
-    });
-
-    skipBtn.addEventListener('click', () => {
-      const dua = filteredList[currentIndex];
-      setStateFor(currentStudent, dua.id, 'notstarted');
-      openDuaByIndex(currentIndex);
-      renderList();
-    });
-
-    function markThisDone() {
-      const dua = filteredList[currentIndex];
-      setStateFor(currentStudent, dua.id, 'done');
-      renderList();
-      filteredList = duas.filter(d => getStateFor(currentStudent, d.id) !== 'done');
-      if (filteredList.length > 0) {
-        currentIndex = Math.min(currentIndex, filteredList.length - 1);
-        openDuaByIndex(currentIndex);
-      } else {
-        showScreen('list');
-      }
-      updateReports();
-    }
-
-    markDoneBtn.addEventListener('click', markThisDone);
-    prevDuaBtn.addEventListener('click', () => { if (currentIndex > 0) openDuaByIndex(currentIndex - 1); });
-    nextDuaBtn.addEventListener('click', () => { if (currentIndex < filteredList.length - 1) openDuaByIndex(currentIndex + 1); });
-    function updateIndexInfo() { duaIndexInfo.textContent = (currentIndex + 1) + ' / ' + filteredList.length; }
-
-    function getDoneDuasFor(student) { return duas.filter(d => getStateFor(student, d.id) === 'done'); }
-
-    function showDoneList() {
-      const today = isoDate(new Date());
-      doneDateEl.textContent = today;
-      const done = getDoneDuasFor(currentStudent);
-      totalDoneCountEl.textContent = done.length;
-      doneListEl.innerHTML = '';
-      done.forEach(d => {
-        const card = document.createElement('div');
-        card.className = 'done-card';
-        card.innerHTML = `<div class="content"><div class="dua-name">${d.name}</div><div class="dua-arabic">${d.arabic}</div><div class="dua-translation">${d.translation}</div></div>`;
-        doneListEl.appendChild(card);
-      });
-      appliedCountEl.textContent = done.length;
     }
 
     // Reports
-    let barChart = null, pieChart = null;
-    function updateReports() {
-      const done = getDoneDuasFor(currentStudent).length;
-      const remaining = duas.length - done;
-      if (barChart) barChart.destroy();
-      barChart = new Chart(barCanvas.getContext('2d'), {
-        type: 'bar',
-        data: { labels: ['Done','Remaining'], datasets: [{ data: [done, remaining], backgroundColor: ['#00ffc8','#444'] }] }
-      });
-      if (pieChart) pieChart.destroy();
-      pieChart = new Chart(pieCanvas.getContext('2d'), {
-        type: 'pie',
-        data: { labels: ['Done','Remaining'], datasets: [{ data: [done, remaining], backgroundColor: ['#00ffc8','#444'] }] }
-      });
+    function renderReports(){
+      if(!currentStudent)return;
+      const total=duas.length;
+      const done=(duaProgress[currentStudent]?.done||[]).length;
+      const ctx1=document.getElementById("barChart").getContext("2d");
+      new Chart(ctx1,{type:"bar",data:{labels:["Done","Remaining"],datasets:[{data:[done,total-done]}]}});
+      const ctx2=document.getElementById("pieChart").getContext("2d");
+      new Chart(ctx2,{type:"pie",data:{labels:["Done","Remaining"],datasets:[{data:[done,total-done]}]}});
     }
 
-    // Nav buttons
-    viewDoneBtn.addEventListener('click', () => { showScreen('done'); showDoneList(); });
-    backToListBtn.addEventListener('click', () => { showScreen('list'); });
-    viewReportBtn.addEventListener('click', () => { showScreen('report'); updateReports(); });
-
-    // init
+    // Init
+    if(students.length===0){students=["Student A","Student B"];localStorage.setItem(STORAGE.students,JSON.stringify(students));}
     renderStudentDropdown();
     renderList();
   </script>
