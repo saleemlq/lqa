@@ -1,184 +1,697 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Student Duas — Daily Monitor</title>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
       /* ---------- base (user-provided theme preserved and extended) ---------- */
       @font-face {
-        font-family: 'Muhammadi';
-        src: url('./muhammadi.ttf') format('truetype');
+        font-family: "Muhammadi";
+        src: url("./muhammadi.ttf") format("trauetype");
         font-weight: normal;
         font-style: normal;
         font-display: swap;
       }
 
-      * { cursor: default; user-select: none; box-sizing: border-box; }
-      html,body { height: 100%; margin: 0; font-family: "Quicksand", sans-serif; }
+      * {
+        cursor: default;
+        user-select: none;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        font-family: "Quicksand", sans-serif;
+      }
       body {
         background: radial-gradient(circle at top left, #101010, #0c0c0c 80%);
-        color: #f4f4f4; display:flex; flex-direction: column; justify-content:flex-start; align-items:center;
-        overflow-x:hidden; position:relative; z-index:1; padding: 1.25rem 0.75rem;
+        color: #f4f4f4;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        overflow-x: hidden;
+        position: relative;
+        z-index: 1;
+        padding: 1.25rem 0.75rem;
       }
-      body::before, body::after {
-        content: ""; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
-        background: radial-gradient(ellipse at 30% 30%, rgba(255, 235, 59, 0.06), transparent 60%),
-                    radial-gradient(ellipse at 70% 80%, rgba(0, 255, 204, 0.04), transparent 70%);
-        animation: bgMove 40s infinite linear; z-index: 0; pointer-events: none;
+      body::before,
+      body::after {
+        content: "";
+        position: fixed;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+            ellipse at 30% 30%,
+            rgba(255, 235, 59, 0.06),
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse at 70% 80%,
+            rgba(0, 255, 204, 0.04),
+            transparent 70%
+          );
+        animation: bgMove 40s infinite linear;
+        z-index: 0;
+        pointer-events: none;
       }
-      body::after { animation-direction: reverse; opacity: 0.6; filter: blur(20px); }
-      @keyframes bgMove { 0%{transform:rotate(0deg);} 100%{transform:rotate(360deg);} }
+      body::after {
+        animation-direction: reverse;
+        opacity: 0.6;
+        filter: blur(20px);
+      }
+      @keyframes bgMove {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
 
-      #sparkle-layer { position: fixed; inset:0; background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 40px 40px; animation: sparkleMove 20s linear infinite; z-index:0; pointer-events:none; }
-      @keyframes sparkleMove { 0%{background-position:0 0;} 100%{background-position:100px 100px;} }
+      #sparkle-layer {
+        position: fixed;
+        inset: 0;
+        background-image: radial-gradient(
+          rgba(255, 255, 255, 0.03) 1px,
+          transparent 1px
+        );
+        background-size: 40px 40px;
+        animation: sparkleMove 20s linear infinite;
+        z-index: 0;
+        pointer-events: none;
+      }
+      @keyframes sparkleMove {
+        0% {
+          background-position: 0 0;
+        }
+        100% {
+          background-position: 100px 100px;
+        }
+      }
 
       /* sticky top header outside main card */
       header.app-header {
-        position: sticky; top: 12px; z-index: 20; width:100%; max-width: 1000px; display:flex; justify-content:center; align-items:center;
+        position: sticky;
+        top: 12px;
+        z-index: 20;
+        width: 100%;
+        max-width: 1000px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
       .top-bar {
-        width:100%; max-width: 1000px; display:flex; justify-content:space-between; align-items:center; gap:1rem; padding:0.35rem 0.75rem; border-radius: 12px;
-        background: linear-gradient(145deg,#0e0e0e,#111); border:1px solid rgba(255,255,255,0.04); box-shadow:0 6px 20px rgba(0,0,0,0.5);
+        width: 100%;
+        max-width: 1000px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.35rem 0.75rem;
+        border-radius: 12px;
+        background: linear-gradient(145deg, #0e0e0e, #111);
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
       }
-      .top-left, .top-right { display:flex; gap:.6rem; align-items:center; }
-      .top-left .btn, .top-right .btn { padding:8px 12px; border-radius:10px; background:#161616; border:1px solid #333; color:#eaeaea; cursor:pointer; transition:all .18s; }
-      .top-left .btn:hover, .top-right .btn:hover { transform: translateY(-2px); border-color: #00ffc8; box-shadow:0 6px 18px rgba(0,255,200,0.06); }
+      .top-left,
+      .top-right {
+        display: flex;
+        gap: 0.6rem;
+        align-items: center;
+      }
+      .top-left .btn,
+      .top-right .btn {
+        padding: 8px 12px;
+        border-radius: 10px;
+        background: #161616;
+        border: 1px solid #333;
+        color: #eaeaea;
+        cursor: pointer;
+        transition: all 0.18s;
+      }
+      .top-left .btn:hover,
+      .top-right .btn:hover {
+        transform: translateY(-2px);
+        border-color: #00ffc8;
+        box-shadow: 0 6px 18px rgba(0, 255, 200, 0.06);
+      }
+
+      .btn {
+        padding: 8px 18px;
+        border-radius: 10px;
+        background: #161616;
+        border: 1px solid #333;
+        color: #eaeaea;
+        cursor: pointer;
+        transition: all 0.18s;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        border-color: #00ffc8;
+        box-shadow: 0 6px 18px rgba(0, 255, 200, 0.06);
+      }
 
       /* --- Custom Select --- */
-.custom-select-wrapper {
-  position: relative;
-  display: inline-block;
-  min-width: 180px;
-  background: linear-gradient(145deg, #1c1c1c, #141414);
-  border: 1px solid #2a2a2a;
-  border-radius: 12px;
-  box-shadow: inset 0 2px 6px rgba(0,0,0,0.5),
-              0 4px 10px rgba(0,0,0,0.25);
-  transition: all 0.2s ease;
-}
-.custom-select-wrapper:hover {
-  border-color: #00ffc8;
-  box-shadow: 0 0 12px rgba(0,255,200,0.15);
-}
+      .custom-select-wrapper {
+        position: relative;
+        display: inline-block;
+        min-width: 180px;
+        background: linear-gradient(145deg, #1c1c1c, #141414);
+        border: 1px solid #2a2a2a;
+        border-radius: 12px;
+        box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5),
+          0 4px 10px rgba(0, 0, 0, 0.25);
+        transition: all 0.2s ease;
+      }
+      .custom-select-wrapper:hover {
+        border-color: #00ffc8;
+        box-shadow: 0 0 12px rgba(0, 255, 200, 0.15);
+      }
 
-.custom-select {
-  appearance: none;
-  background: transparent;
-  color: #fdfdfd;
-  font-size: 1rem;
-  font-weight: 600;
-  padding: 10px 40px 10px 14px;
-  border: none;
-  border-radius: 12px;
-  width: 100%;
-  cursor: pointer;
-  outline: none;
-}
-.custom-select:focus {
-  border: none;
-  outline: none;
-}
-.custom-select option {
-  background: #151515;
-  color: #eaeaea;
-  padding: 10px;
-  font-size: 0.95rem;
-}
-.custom-select option:hover {
-  background: #00ffc8;
-  color: #012;
-}
+      .custom-select {
+        appearance: none;
+        background: transparent;
+        color: #fdfdfd;
+        font-size: 1rem;
+        font-weight: 600;
+        padding: 10px 40px 10px 14px;
+        border: none;
+        border-radius: 12px;
+        width: 100%;
+        cursor: pointer;
+        outline: none;
+      }
+      .custom-select:focus {
+        border: none;
+        outline: none;
+      }
+      .custom-select option {
+        background: #151515;
+        color: #eaeaea;
+        padding: 10px;
+        font-size: 0.95rem;
+      }
+      .custom-select option:hover {
+        background: #00ffc8;
+        color: #012;
+      }
 
-/* arrow */
-.custom-arrow {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  font-size: 0.9rem;
-  color: #888;
-  transition: color 0.2s;
-}
-.custom-select-wrapper:hover .custom-arrow {
-  color: #00ffc8;
-}
-
+      /* arrow */
+      .custom-arrow {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        font-size: 0.9rem;
+        color: #888;
+        transition: color 0.2s;
+      }
+      .custom-select-wrapper:hover .custom-arrow {
+        color: #00ffc8;
+      }
 
       /* main card */
       #quiz-app {
-  width: 100%;
-  max-width: 1000px;
-  /* position: relative; */
-  /* z-index: 1; */
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(16px);
-  border-radius: 20px;
-  padding: 1.6rem;
-  margin-top: 0.9rem;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  transition: 0.3s ease-in-out;
-  
-  /* let it expand naturally */
-  overflow: visible;  
-  height: auto;
-  /* margin-top: 100px; */
-}
+        width: 100%;
+        max-width: 1000px;
+        /* position: relative; */
+        /* z-index: 1; */
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(16px);
+        border-radius: 20px;
+        padding: 1.6rem;
+        margin-top: 0.9rem;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: 0.3s ease-in-out;
 
+        /* let it expand naturally */
+        overflow: visible;
+        height: auto;
+        /* margin-top: 100px; */
+      }
 
-      .screen { display:none; }
-      .screen.active { display:block; animation: fadeIn 0.36s ease-in-out; }
-      @keyframes fadeIn { from {opacity:0; transform:translateY(8px);} to {opacity:1; transform:none;} }
+      .screen {
+        display: none;
+      }
+      .screen.active {
+        display: block;
+        animation: fadeIn 0.36s ease-in-out;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
 
-      ul { list-style:none; margin:0; padding:0; }
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
 
-      .dua-list li { margin:12px 0; padding:14px 18px; border-radius:12px; background:linear-gradient(145deg,#1b1b1b,#151515); border:1px solid #222; display:flex; align-items:center; justify-content:space-between; transition: all .18s; }
-      .dua-list li:hover { transform: translateY(-3px); border-color: #00ffc8; box-shadow:0 0 12px rgba(0,255,200,0.08); }
-      .dua-card-left { display:flex; align-items:center; gap:12px; }
-      .dua-name { font-weight:600; font-size:1.05rem; color:#f4f4f4; }
-      .dua-card.started { background: linear-gradient(145deg,#203126,#17251f); border-color: rgba(0,255,200,0.12); }
-      .progress-dot { width:12px; height:12px; border-radius:50%; background:#00ffc8; box-shadow:0 0 8px #00ffc8aa; }
+      .dua-list li {
+        margin: 12px 0;
+        padding: 14px 18px;
+        border-radius: 12px;
+        background: linear-gradient(145deg, #1b1b1b, #151515);
+        border: 1px solid #222;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: all 0.18s;
+      }
+      .dua-list li:hover {
+        transform: translateY(-3px);
+        border-color: #00ffc8;
+        box-shadow: 0 0 12px rgba(0, 255, 200, 0.08);
+      }
+      .dua-card-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .dua-name {
+        font-weight: 600;
+        font-size: 1.05rem;
+        color: #f4f4f4;
+      }
+      .dua-card.started {
+        background: linear-gradient(145deg, #203126, #17251f);
+        border-color: rgba(0, 255, 200, 0.12);
+      }
+      .progress-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #00ffc8;
+        box-shadow: 0 0 8px #00ffc8aa;
+      }
 
-      .cardy { padding: 14px 18px; background: linear-gradient(145deg,#2d2d2d,#1f1f1f); color: #ffffff; border: 1px solid #444; border-radius: 12px; font-size: 1rem; cursor: auto; }
+      .cardy {
+        padding: 14px 18px;
+        background: linear-gradient(145deg, #2d2d2d, #1f1f1f);
+        color: #ffffff;
+        border: 1px solid #444;
+        border-radius: 12px;
+        font-size: 1rem;
+        cursor: auto;
+      }
 
       /* Dua page large text */
-      .dua-page .dua-title { font-size:1.5rem; color:#ffe761; font-weight:700; margin-bottom:.6rem; }
-      .dua-full { display:flex; flex-direction:column; gap:.6rem; align-items:center; justify-content:center; padding:1.2rem; min-height:60vh; }
-      .dua-text { font-family: 'Muhammadi', 'Quicksand', sans-serif; direction: rtl; text-align: center; font-size: 2.4rem; line-height:1.3; }
-      .translation { font-size:1.25rem; opacity:0.95; text-align:center; max-width:90%; }
-      .dua-controls { display:flex; gap:.6rem; align-items:center; margin-top:1rem; }
-      .dua-controls .btn { padding:10px 14px; border-radius:10px; background:#141414; border:1px solid #333; color:#f4f4f4; cursor:pointer; }
-      .btn.primary { background: linear-gradient(145deg,#00b894,#00ffc8); color:#072; font-weight:700; border-color: #00ffc8; }
-      .btn.ghost { background:transparent; border:1px solid #444; color:#ddd; }
+      .dua-page .dua-title {
+        font-size: 1.5rem;
+        color: #ffe761;
+        font-weight: 700;
+        margin-bottom: 0.6rem;
+      }
+      .dua-full {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        align-items: center;
+        justify-content: center;
+        padding: 1.2rem;
+        min-height: 60vh;
+      }
+      .dua-text {
+        font-family: "Muhammadi", "Quicksand", sans-serif;
+        direction: rtl;
+        text-align: center;
+        font-size: 2.4rem;
+        line-height: 1.3;
+      }
+      .translation {
+        font-size: 1.25rem;
+        opacity: 0.95;
+        text-align: center;
+        max-width: 90%;
+      }
+      .dua-controls {
+        display: flex;
+        gap: 0.6rem;
+        align-items: center;
+        margin-top: 1rem;
+      }
+      .dua-controls .btn {
+        padding: 10px 14px;
+        border-radius: 10px;
+        background: #141414;
+        border: 1px solid #333;
+        color: #f4f4f4;
+        cursor: pointer;
+      }
+      .btn.primary {
+        background: linear-gradient(145deg, #00b894, #00ffc8);
+        color: #072;
+        font-weight: 700;
+        border-color: #00ffc8;
+      }
+      .btn.ghost {
+        background: transparent;
+        border: 1px solid #444;
+        color: #ddd;
+      }
 
       /* Done Page styles */
-      .done-list li { display:flex; gap:10px; align-items:flex-start; padding:12px; border-radius:12px; background:linear-gradient(145deg,#161616,#0f0f0f); border:1px solid #222; margin:10px 0; }
-      .custom-checkbox { --size:20px; width:var(--size); height:var(--size); border-radius:6px; border:1px solid #444; background:#0f0f0f; position:relative; display:inline-block; margin-right:8px; cursor:pointer; }
-      .custom-checkbox.checked { background: linear-gradient(145deg,#00ffc8,#00b894); box-shadow:0 6px 18px rgba(0,255,200,0.12); border-color:#00ffc8; }
-      .custom-checkbox:after { content:""; position:absolute; left:5px; top:1px; width:6px; height:10px; border:2px solid transparent; border-left:none; border-top:none; transform: rotate(35deg); }
-      .custom-checkbox.checked:after { border-color:#013; border-left:none; border-top:none; }
-      .done-card-body { flex:1; }
-      .toggle-buttons { display:flex; gap:.5rem; margin-top:6px; }
-      .toggle-btn { padding:6px 10px; border-radius:8px; background:#141414; border:1px solid #333; cursor:pointer; }
-      .toggle-btn.active { background: linear-gradient(145deg,#00ffc8,#00b894); color:#012; border-color:#00ffc8; }
+      .done-list li {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        padding: 12px;
+        border-radius: 12px;
+        background: linear-gradient(145deg, #161616, #0f0f0f);
+        border: 1px solid #222;
+        margin: 10px 0;
+      }
+      .custom-checkbox {
+        --size: 20px;
+        width: var(--size);
+        height: var(--size);
+        border-radius: 6px;
+        border: 1px solid #444;
+        background: #0f0f0f;
+        position: relative;
+        display: inline-block;
+        margin-right: 8px;
+        cursor: pointer;
+      }
+      .custom-checkbox.checked {
+        background: linear-gradient(145deg, #00ffc8, #00b894);
+        box-shadow: 0 6px 18px rgba(0, 255, 200, 0.12);
+        border-color: #00ffc8;
+      }
+      .custom-checkbox:after {
+        content: "";
+        position: absolute;
+        left: 5px;
+        top: 1px;
+        width: 6px;
+        height: 10px;
+        border: 2px solid transparent;
+        border-left: none;
+        border-top: none;
+        transform: rotate(35deg);
+      }
+      .custom-checkbox.checked:after {
+        border-color: #013;
+        border-left: none;
+        border-top: none;
+      }
+      .done-card-body {
+        flex: 1;
+      }
+      .toggle-buttons {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 6px;
+      }
+      .toggle-btn {
+        padding: 6px 10px;
+        border-radius: 8px;
+        background: #141414;
+        border: 1px solid #333;
+        cursor: pointer;
+        color: #00ffc8;
+        margin-inline: 4px;
+      }
+      .toggle-btn.active {
+        background: linear-gradient(145deg, #00ffc8, #00b894);
+        color: #012;
+        border-color: #00ffc8;
+      }
 
       /* Charts area */
-      .report-row { display:flex; gap:1rem; align-items:stretch; }
-      .chart-card { flex:1; padding:12px; border-radius:12px; background:linear-gradient(145deg,#151515,#0f0f0f); border:1px solid #222; }
-      .report-title { font-weight:700; color:#ffe761; margin-bottom:8px; }
+      .report-row {
+        display: flex;
+        gap: 1rem;
+        align-items: stretch;
+      }
+      .chart-card {
+        flex: 1;
+        padding: 12px;
+        border-radius: 12px;
+        background: linear-gradient(145deg, #151515, #0f0f0f);
+        border: 1px solid #222;
+      }
+      .report-title {
+        font-weight: 700;
+        color: #ffe761;
+        margin-bottom: 8px;
+      }
 
       /* small helpers */
-      .muted { color:#a9abb8; font-size:0.95rem; }
-      .flex { display:flex; align-items:center; }
-      .space-between { display:flex; justify-content:space-between; align-items:center; }
-      .small { font-size:0.9rem; }
+      .muted {
+        color: #a9abb8;
+        font-size: 0.95rem;
+      }
+      .flex {
+        display: flex;
+        align-items: center;
+      }
+      .space-between {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .small {
+        font-size: 0.9rem;
+      }
+
+      /* ---------- base (fixed + improved) ---------- */
+      @font-face {
+        font-family: "Muhammadi";
+        src: url("./muhammadi.ttf") format("truetype");
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      * {
+        cursor: default;
+        user-select: none;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        font-family: "Quicksand", sans-serif;
+      }
+      body {
+        background: radial-gradient(circle at top left, #101010, #0c0c0c 80%);
+        color: #f4f4f4;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        overflow-x: hidden;
+        position: relative;
+        z-index: 1;
+        padding: 1.25rem 0.75rem;
+        animation: bgPulse 30s ease-in-out infinite alternate;
+      }
+      @keyframes bgPulse {
+        from {
+          background: radial-gradient(circle at 20% 30%, #101010, #0a0a0a 80%);
+        }
+        to {
+          background: radial-gradient(circle at 80% 70%, #0d0d0d, #050505 80%);
+        }
+      }
+      body::before,
+      body::after {
+        content: "";
+        position: fixed;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+            ellipse at 30% 30%,
+            rgba(255, 235, 59, 0.06),
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse at 70% 80%,
+            rgba(0, 255, 204, 0.04),
+            transparent 70%
+          );
+        animation: bgMove 50s infinite linear;
+        z-index: 0;
+        pointer-events: none;
+      }
+      body::after {
+        animation-direction: reverse;
+        opacity: 0.6;
+        filter: blur(25px);
+      }
+      @keyframes bgMove {
+        0% {
+          transform: rotate(0deg) scale(1);
+        }
+        100% {
+          transform: rotate(360deg) scale(1.05);
+        }
+      }
+
+      #sparkle-layer {
+        position: fixed;
+        inset: 0;
+        background-image: radial-gradient(
+          rgba(255, 255, 255, 0.025) 1px,
+          transparent 1px
+        );
+        background-size: 40px 40px;
+        animation: sparkleMove 18s linear infinite;
+        z-index: 0;
+        pointer-events: none;
+      }
+      @keyframes sparkleMove {
+        0% {
+          background-position: 0 0;
+        }
+        100% {
+          background-position: 120px 120px;
+        }
+      }
+
+      /* ---------- Main card ---------- */
+      #quiz-app {
+        width: 100%;
+        max-width: 1000px;
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(16px);
+        border-radius: 20px;
+        padding: 1.6rem;
+        margin-top: 1rem;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: transform 0.3s ease-in-out;
+      }
+      #quiz-app:hover {
+        transform: scale(1.01);
+      }
+
+      /* ---------- Dua text + translation ---------- */
+      .dua-text {
+        font-family: "Muhammadi", "Quicksand", sans-serif;
+        direction: rtl;
+        text-align: center;
+        font-size: 2.5rem;
+        line-height: 1.4;
+        transition: color 0.3s, text-shadow 0.3s;
+      }
+      .dua-text:hover {
+        color: #00ffc8;
+        text-shadow: 0 0 8px rgba(0, 255, 200, 0.6);
+      }
+
+      .translation {
+        font-size: 1.25rem;
+        opacity: 0.95;
+        text-align: center;
+        max-width: 100%;
+        transition: color 0.3s, text-shadow 0.3s;
+      }
+      .translation:hover {
+        color: #ffe761;
+        text-shadow: 0 0 8px rgba(255, 231, 97, 0.6);
+      }
+
+      /* ---------- Next / Previous buttons ---------- */
+      .dua-controls {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        margin-top: 1.5rem;
+      }
+      .dua-controls .btn {
+        padding: 12px 28px;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        background: transparent;
+        border: 2px solid #00ffc8;
+        color: #00ffc8;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      .dua-controls .btn:hover {
+        background: #00ffc8;
+        color: #012;
+        box-shadow: 0 0 18px rgba(0, 255, 200, 0.4),
+          0 0 28px rgba(0, 255, 200, 0.2);
+        transform: translateY(-2px);
+      }
+      .dua-controls .btn:active {
+        transform: scale(0.96);
+      }
+
+      /* small glowing pulse animation for buttons */
+      .dua-controls .btn::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(0, 255, 200, 0.15) 0%,
+          transparent 70%
+        );
+        transform: scale(0);
+        transition: transform 0.4s ease;
+        z-index: -1;
+      }
+      .dua-controls .btn:hover::before {
+        transform: scale(1);
+      }
+
+      /* ---------- Animations ---------- */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .screen.active {
+        animation: fadeIn 0.45s ease-in-out;
+      }
 
       /* responsiveness */
-      @media (max-width:720px){ .report-row{flex-direction:column;} .dua-text{font-size:1.9rem;} }
+      @media (max-width: 720px) {
+        .report-row {
+          flex-direction: column;
+        }
+        .dua-text {
+          font-size: 1.9rem;
+        }
+      }
     </style>
   </head>
   <body>
@@ -192,7 +705,11 @@
         </div>
         <div class="top-right">
           <div id="student-select-wrapper" class="custom-select-wrapper">
-            <select id="student-select" class="custom-select" aria-label="Select student"></select>
+            <select
+              id="student-select"
+              class="custom-select"
+              aria-label="Select student"
+            ></select>
             <div class="custom-arrow">▾</div>
           </div>
         </div>
@@ -203,8 +720,8 @@
       <!-- HOME: undone duas list -->
       <section id="home-screen" class="screen active">
         <div class="space-between">
-          <h1 style="margin:0;">Undone Duas</h1>
-          <div class="muted small" id="undone-counter"> </div>
+          <h1 style="margin: 0">Undone Duas</h1>
+          <div class="muted small" id="undone-counter"></div>
         </div>
 
         <ul id="undone-list" class="dua-list" aria-live="polite"></ul>
@@ -226,12 +743,12 @@
             <div id="dua-translation" class="translation">&nbsp;</div>
           </div>
 
-          <div class="space-between" style="margin-top:6px;">
-            <div>
-              <button id="dua-prev" class="btn ghost">◀ Prev</button>
+          <div class="space-between" style="margin-top: 6px">
+            <div class="btn primary">
+              <button id="dua-prev" class="btn primary">◀</button>
             </div>
-            <div>
-              <button id="dua-next" class="btn ghost">Next ▶</button>
+            <div class="btn primary">
+              <button id="dua-next" class="btn primary">▶</button>
             </div>
           </div>
         </div>
@@ -242,15 +759,19 @@
         <div class="cardy">
           <div class="space-between">
             <div>
-              <h2 style="margin:0;">Done Duas — <span id="done-date"></span></h2>
-              <div class="muted small">Mark applied duas for the selected day</div>
+              <h2 style="margin: 0">
+                Done Duas — <span id="done-date"></span>
+              </h2>
+              <div class="muted small">
+                Mark applied duas for the selected day
+              </div>
             </div>
             <div>
               <button id="done-back" class="btn">Back</button>
             </div>
           </div>
 
-          <ul id="done-list" class="done-list" style="margin-top:12px;"></ul>
+          <ul id="done-list" class="done-list" style="margin-top: 12px"></ul>
         </div>
       </section>
 
@@ -262,7 +783,7 @@
             <div class="muted small">Last 10 reports</div>
           </div>
 
-          <div class="report-row" style="margin-top:12px;">
+          <div class="report-row" style="margin-top: 12px">
             <div class="chart-card">
               <div class="muted small">Latest Report</div>
               <canvas id="pieChart" width="400" height="300"></canvas>
@@ -279,33 +800,72 @@
     <script>
       /* ---------- Data: duas (use ids) ---------- */
       const duas = [
-        { id: 'd1', name: "Before Eating", dua: 'بِسْمِ اللَّهِ', translation: 'In the name of Allah' },
-        { id: 'd2', name: "After Eating", dua: 'الْحَمْدُ لِلَّهِ', translation: 'All praise is for Allah' },
-        { id: 'd3', name: "Before Sleeping", dua: 'بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا', translation: 'In Your name O Allah I live and die' },
-        { id: 'd4', name: "Waking Up", dua: 'الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا', translation: 'Praise be to Allah Who gave us life after He caused us to die' },
-        { id: 'd5', name: "Entering Home", dua: 'بِسْمِ اللَّهِ وَلَجْنَا', translation: 'In the name of Allah we enter' },
-        { id: 'd6', name: "Leaving Home", dua: 'بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ', translation: 'In the name of Allah, I place my trust in Allah' }
+        {
+          id: "d1",
+          name: "Before Eating",
+          dua: "بِسْمِ اللَّهِ",
+          translation: "In the name of Allah",
+        },
+        {
+          id: "d2",
+          name: "After Eating",
+          dua: "الْحَمْدُ لِلَّهِ",
+          translation: "All praise is for Allah",
+        },
+        {
+          id: "d3",
+          name: "Before Sleeping",
+          dua: "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا",
+          translation: "In Your name O Allah I live and die",
+        },
+        {
+          id: "d4",
+          name: "Waking Up",
+          dua: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا",
+          translation:
+            "Praise be to Allah Who gave us life after He caused us to die",
+        },
+        {
+          id: "d5",
+          name: "Entering Home",
+          dua: "بِسْمِ اللَّهِ وَلَجْنَا",
+          translation: "In the name of Allah we enter",
+        },
+        {
+          id: "d6",
+          name: "Leaving Home",
+          dua: "بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ",
+          translation: "In the name of Allah, I place my trust in Allah",
+        },
       ];
 
       /* ---------- Local storage keys ---------- */
-      const LS_STUDENTS = 'listOfStudents';
-      const LS_ACTIVE = 'activeStudent';
-      const LS_STATES = 'studentDuaStates';
-      const LS_REPORTS = 'duasReports';
+      const LS_STUDENTS = "listOfStudents";
+      const LS_ACTIVE = "activeStudent";
+      const LS_STATES = "studentDuaStates";
+      const LS_REPORTS = "duasReports";
 
       /* ---------- Utilities ---------- */
       const $ = (id) => document.getElementById(id);
 
       function loadJSON(key, fallback) {
-        try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch (e) { console.error('loadJSON', e); return fallback; }
+        try {
+          const raw = localStorage.getItem(key);
+          return raw ? JSON.parse(raw) : fallback;
+        } catch (e) {
+          console.error("loadJSON", e);
+          return fallback;
+        }
       }
-      function saveJSON(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+      function saveJSON(key, val) {
+        localStorage.setItem(key, JSON.stringify(val));
+      }
 
       /* ---------- Students & Active ---------- */
       function ensureStudents() {
         let list = loadJSON(LS_STUDENTS, null);
         if (!Array.isArray(list) || list.length === 0) {
-          list = ['Ali Ahmed', 'Fatima']; // sensible defaults for demo
+          list = ["Ali Ahmed", "Fatima"]; // sensible defaults for demo
           saveJSON(LS_STUDENTS, list);
         }
         return list;
@@ -315,7 +875,9 @@
         const s = localStorage.getItem(LS_ACTIVE);
         const list = ensureStudents();
         if (!s || !list.includes(s)) {
-          const first = list[0]; localStorage.setItem(LS_ACTIVE, first); return first;
+          const first = list[0];
+          localStorage.setItem(LS_ACTIVE, first);
+          return first;
         }
         return s;
       }
@@ -329,64 +891,120 @@
       function initStates() {
         const raw = loadJSON(LS_STATES, {});
         const students = ensureStudents();
-        students.forEach(s => {
+        students.forEach((s) => {
           if (!raw[s]) {
             raw[s] = {};
-            duas.forEach(d => raw[s][d.id] = 'not_started');
+            duas.forEach((d) => (raw[s][d.id] = "not_started"));
           } else {
             // ensure all dua ids exist
-            duas.forEach(d => { if (!raw[s][d.id]) raw[s][d.id] = 'not_started'; });
+            duas.forEach((d) => {
+              if (!raw[s][d.id]) raw[s][d.id] = "not_started";
+            });
           }
         });
         saveJSON(LS_STATES, raw);
         return raw;
       }
 
-      function getStates() { return loadJSON(LS_STATES, initStates()); }
-      function saveStates(states) { saveJSON(LS_STATES, states); }
+      function getStates() {
+        return loadJSON(LS_STATES, initStates());
+      }
+      function saveStates(states) {
+        saveJSON(LS_STATES, states);
+      }
 
       /* ---------- reports: map studentName -> { dateISO: { duaId: boolean }} ---------- */
-      function getReports() { return loadJSON(LS_REPORTS, {}); }
-      function saveReports(reports) { saveJSON(LS_REPORTS, reports); }
+      function getReports() {
+        return loadJSON(LS_REPORTS, {});
+      }
+      function saveReports(reports) {
+        saveJSON(LS_REPORTS, reports);
+      }
 
       /* ---------- helpers ---------- */
       function getUndoneDuasForStudent(student) {
         const states = getStates()[student] || {};
-        return duas.filter(d => states[d.id] !== 'done');
+        return duas.filter((d) => states[d.id] !== "done");
       }
       function getDoneDuasForStudent(student) {
         const states = getStates()[student] || {};
-        return duas.filter(d => states[d.id] === 'done');
+        return duas.filter((d) => states[d.id] === "done");
       }
 
       /* ---------- render top bar (dynamic per page) ---------- */
-      let currentPage = 'home'; // home | dua | done | report
+      let currentPage = "home"; // home | dua | done | report
       let currentDuaId = null;
 
       function renderTopBar() {
-        const left = $('left-buttons'); left.innerHTML = '';
+        const left = $("left-buttons");
+        left.innerHTML = "";
         const active = getActiveStudent();
 
-        function btn(text, onClick, extraClass='') {
-          const b = document.createElement('button'); b.className = 'btn ' + extraClass; b.textContent = text; b.type='button'; b.onclick = onClick; return b;
+        function btn(text, onClick, extraClass = "") {
+          const b = document.createElement("button");
+          b.className = "btn " + extraClass;
+          b.textContent = text;
+          b.type = "button";
+          b.onclick = onClick;
+          return b;
         }
 
         // Buttons per page, do not render navigation to the current page
-        if (currentPage === 'home') {
-          left.appendChild(btn('Done Duas', () => { goTo('done'); }));
-          left.appendChild(btn('Report', () => { goTo('report'); }));
-        } else if (currentPage === 'dua') {
-          left.appendChild(btn('Back', () => { goTo('home'); }));
-          left.appendChild(btn('Done Duas', () => { goTo('done'); }));
-          left.appendChild(btn('Report', () => { goTo('report'); }));
-        } else if (currentPage === 'done') {
-          left.appendChild(btn('Back', () => { goTo('home'); }));
-          left.appendChild(btn('Undone Duas', () => { goTo('home'); }));
-          left.appendChild(btn('Report', () => { goTo('report'); }));
-        } else if (currentPage === 'report') {
+        if (currentPage === "home") {
+          left.appendChild(
+            btn("Done Duas", () => {
+              goTo("done");
+            })
+          );
+          left.appendChild(
+            btn("Report", () => {
+              goTo("report");
+            })
+          );
+        } else if (currentPage === "dua") {
+          left.appendChild(
+            btn("Back", () => {
+              goTo("home");
+            })
+          );
+          left.appendChild(
+            btn("Done Duas", () => {
+              goTo("done");
+            })
+          );
+          left.appendChild(
+            btn("Report", () => {
+              goTo("report");
+            })
+          );
+        } else if (currentPage === "done") {
+          left.appendChild(
+            btn("Back", () => {
+              goTo("home");
+            })
+          );
+          left.appendChild(
+            btn("Undone Duas", () => {
+              goTo("home");
+            })
+          );
+          left.appendChild(
+            btn("Report", () => {
+              goTo("report");
+            })
+          );
+        } else if (currentPage === "report") {
           // report page should not have report button
-          left.appendChild(btn('Home', () => { goTo('home'); }));
-          left.appendChild(btn('Done Duas', () => { goTo('done'); }));
+          left.appendChild(
+            btn("Home", () => {
+              goTo("home");
+            })
+          );
+          left.appendChild(
+            btn("Done Duas", () => {
+              goTo("done");
+            })
+          );
         }
 
         // render student select on right
@@ -394,246 +1012,432 @@
       }
 
       function renderStudentSelect() {
-        const select = $('student-select'); select.innerHTML = '';
-        const students = ensureStudents(); const active = getActiveStudent();
-        students.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; select.appendChild(o); });
+        const select = $("student-select");
+        select.innerHTML = "";
+        const students = ensureStudents();
+        const active = getActiveStudent();
+        students.forEach((s) => {
+          const o = document.createElement("option");
+          o.value = s;
+          o.textContent = s;
+          select.appendChild(o);
+        });
         select.value = active;
         select.onchange = (e) => setActiveStudent(e.target.value);
       }
 
       /* ---------- Home (undone) ---------- */
       function renderHome() {
-        currentPage = 'home'; renderTopBar();
-        document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-        $('home-screen').classList.add('active');
+        currentPage = "home";
+        renderTopBar();
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        $("home-screen").classList.add("active");
 
         const student = getActiveStudent();
         const undone = getUndoneDuasForStudent(student);
-        const ul = $('undone-list'); ul.innerHTML = '';
+        const ul = $("undone-list");
+        ul.innerHTML = "";
 
-        undone.forEach(d => {
-          const states = getStates(); const st = states[student][d.id];
-          const li = document.createElement('li'); li.className = 'dua-card';
-          if (st === 'started') li.classList.add('started');
+        undone.forEach((d) => {
+          const states = getStates();
+          const st = states[student][d.id];
+          const li = document.createElement("li");
+          li.className = "dua-card";
+          if (st === "started") li.classList.add("started");
 
-          const left = document.createElement('div'); left.className = 'dua-card-left';
-          const name = document.createElement('div'); name.className = 'dua-name'; name.textContent = d.name;
+          const left = document.createElement("div");
+          left.className = "dua-card-left";
+          const name = document.createElement("div");
+          name.className = "dua-name";
+          name.textContent = d.name;
 
-          if (st === 'started') {
-            const dot = document.createElement('span'); dot.className = 'progress-dot'; left.appendChild(dot);
+          if (st === "started") {
+            const dot = document.createElement("span");
+            dot.className = "progress-dot";
+            left.appendChild(dot);
           }
           left.appendChild(name);
 
           li.appendChild(left);
-          li.onclick = () => { openDua(d.id); };
+          li.onclick = () => {
+            openDua(d.id);
+          };
           ul.appendChild(li);
         });
 
-        $('undone-counter').textContent = `${undone.length} undone dua${undone.length===1? '' : 's'}`;
+        $("undone-counter").textContent = `${undone.length} undone dua${
+          undone.length === 1 ? "" : "s"
+        }`;
       }
 
       /* ---------- Dua page ---------- */
       function openDua(duaId) {
-        currentDuaId = duaId; renderDua();
+        currentDuaId = duaId;
+        renderDua();
       }
 
       function renderDua() {
-        currentPage = 'dua'; renderTopBar(); document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-        $('dua-screen').classList.add('active');
+        currentPage = "dua";
+        renderTopBar();
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        $("dua-screen").classList.add("active");
 
-        const student = getActiveStudent(); const states = getStates(); const st = states[student][currentDuaId];
-        const d = duas.find(x=>x.id===currentDuaId);
-        $('dua-title').textContent = d.name;
-        $('dua-text').textContent = d.dua;
-        $('dua-translation').textContent = d.translation;
+        const student = getActiveStudent();
+        const states = getStates();
+        const st = states[student][currentDuaId];
+        const d = duas.find((x) => x.id === currentDuaId);
+        $("dua-title").textContent = d.name;
+        $("dua-text").textContent = d.dua;
+        $("dua-translation").textContent = d.translation;
 
         // counter among undone duas
         const undone = getUndoneDuasForStudent(student);
-        const idx = undone.findIndex(x=>x.id===currentDuaId);
-        const counterText = undone.length? `${Math.max(0, idx)+1}/${undone.length}` : '0/0';
-        $('dua-counter').textContent = counterText;
+        const idx = undone.findIndex((x) => x.id === currentDuaId);
+        const counterText = undone.length
+          ? `${Math.max(0, idx) + 1}/${undone.length}`
+          : "0/0";
+        $("dua-counter").textContent = counterText;
 
         // top controls: Start/Skip and Mark Done
-        const topCtr = $('dua-controls-top'); topCtr.innerHTML = '';
-        const startBtn = document.createElement('button'); startBtn.className='btn'; startBtn.textContent = st==='started' ? 'Skip' : 'Start';
-        startBtn.onclick = (e) => { e.stopPropagation(); toggleStartForCurrent(); };
+        const topCtr = $("dua-controls-top");
+        topCtr.innerHTML = "";
+        const startBtn = document.createElement("button");
+        startBtn.className = "btn";
+        startBtn.textContent = st === "started" ? "Skip" : "Start";
+        startBtn.onclick = (e) => {
+          e.stopPropagation();
+          toggleStartForCurrent();
+        };
         topCtr.appendChild(startBtn);
 
-        const markBtn = document.createElement('button'); markBtn.className='btn primary'; markBtn.textContent='Mark Done';
-        markBtn.style.display = st==='started' ? 'inline-block' : 'none';
-        markBtn.onclick = (e) => { e.stopPropagation(); markDoneAndOpenNext(); };
+        const markBtn = document.createElement("button");
+        markBtn.className = "btn primary";
+        markBtn.textContent = "Mark Done";
+        markBtn.style.display = st === "started" ? "inline-block" : "none";
+        markBtn.onclick = (e) => {
+          e.stopPropagation();
+          markDoneAndOpenNext();
+        };
         topCtr.appendChild(markBtn);
 
         // prev / next undone
-        $('dua-prev').onclick = () => navigateDua(-1);
-        $('dua-next').onclick = () => navigateDua(1);
-        $('dua-back').onclick = () => goTo('home');
+        $("dua-prev").onclick = () => navigateDua(-1);
+        $("dua-next").onclick = () => navigateDua(1);
+        // $("dua-back").onclick = () => goTo("home");
       }
 
       function toggleStartForCurrent() {
-        const student = getActiveStudent(); const states = getStates(); const st = states[student][currentDuaId];
-        states[student][currentDuaId] = (st === 'started') ? 'not_started' : 'started';
-        saveStates(states); renderDua(); 
+        const student = getActiveStudent();
+        const states = getStates();
+        const st = states[student][currentDuaId];
+        states[student][currentDuaId] =
+          st === "started" ? "not_started" : "started";
+        saveStates(states);
+        renderDua();
         // renderHome();
       }
 
       function markDoneAndOpenNext() {
-        const student = getActiveStudent(); const states = getStates(); states[student][currentDuaId] = 'done'; saveStates(states);
+        const student = getActiveStudent();
+        const states = getStates();
+        states[student][currentDuaId] = "done";
+        saveStates(states);
         // after marking done, open next undone dua
         const undone = getUndoneDuasForStudent(student);
-        const next = undone.find(d => d.id !== currentDuaId);
-        if (next) { currentDuaId = next.id; renderDua(); }
-        else { goTo('home'); }
+        const next = undone.find((d) => d.id !== currentDuaId);
+        if (next) {
+          currentDuaId = next.id;
+          renderDua();
+        } else {
+          goTo("home");
+        }
       }
 
       function navigateDua(direction) {
-        const student = getActiveStudent(); const undone = getUndoneDuasForStudent(student);
+        const student = getActiveStudent();
+        const undone = getUndoneDuasForStudent(student);
         if (!undone.length) return;
-        const idx = Math.max(0, undone.findIndex(d => d.id === currentDuaId));
+        const idx = Math.max(
+          0,
+          undone.findIndex((d) => d.id === currentDuaId)
+        );
         let nextIdx = idx + direction;
-        if (nextIdx < 0) nextIdx = 0; if (nextIdx >= undone.length) nextIdx = undone.length - 1;
-        currentDuaId = undone[nextIdx].id; renderDua();
+        if (nextIdx < 0) nextIdx = 0;
+        if (nextIdx >= undone.length) nextIdx = undone.length - 1;
+        currentDuaId = undone[nextIdx].id;
+        renderDua();
       }
 
       /* ---------- Done page (daily monitoring) ---------- */
       function renderDone() {
-        currentPage = 'done'; renderTopBar(); document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-        $('done-screen').classList.add('active');
+        currentPage = "done";
+        renderTopBar();
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        $("done-screen").classList.add("active");
 
-        const student = getActiveStudent(); const done = getDoneDuasForStudent(student);
-        const ul = $('done-list'); ul.innerHTML = '';
-        const today = new Date().toISOString().slice(0,10); $('done-date').textContent = new Date().toLocaleDateString();
+        const student = getActiveStudent();
+        const done = getDoneDuasForStudent(student);
+        const ul = $("done-list");
+        ul.innerHTML = "";
+        const today = new Date().toISOString().slice(0, 10);
+        $("done-date").textContent = new Date().toLocaleDateString();
 
         // ensure reports structure exists
-        const reports = getReports(); if (!reports[student]) reports[student] = {}; if (!reports[student][today]) reports[student][today] = {};
+        const reports = getReports();
+        if (!reports[student]) reports[student] = {};
+        if (!reports[student][today]) reports[student][today] = {};
         saveReports(reports);
 
-        done.forEach(d => {
-          const li = document.createElement('li');
-          const cb = document.createElement('div'); cb.className = 'custom-checkbox';
-          const checked = !!(reports[student] && reports[student][today] && reports[student][today][d.id]);
-          if (checked) cb.classList.add('checked');
-          cb.onclick = (e) => { e.stopPropagation(); toggleReportCheckbox(student, today, d.id, cb); };
+        done.forEach((d) => {
+          const li = document.createElement("li");
+          const cb = document.createElement("div");
+          cb.className = "custom-checkbox";
+          const checked = !!(
+            reports[student] &&
+            reports[student][today] &&
+            reports[student][today][d.id]
+          );
+          if (checked) cb.classList.add("checked");
+          cb.onclick = (e) => {
+            e.stopPropagation();
+            toggleReportCheckbox(student, today, d.id, cb);
+          };
 
-          const body = document.createElement('div'); body.className = 'done-card-body';
-          const titleRow = document.createElement('div'); titleRow.className = 'space-between';
-          const name = document.createElement('div'); name.textContent = d.name; name.style.fontWeight = 700; titleRow.appendChild(name);
+          const body = document.createElement("div");
+          body.className = "done-card-body";
+          const titleRow = document.createElement("div");
+          titleRow.className = "space-between";
+          const name = document.createElement("div");
+          name.textContent = d.name;
+          name.style.fontWeight = 700;
+          titleRow.appendChild(name);
 
-          const actions = document.createElement('div'); actions.className = 'flex';
-          const duaBtn = document.createElement('button'); duaBtn.className='toggle-btn'; duaBtn.textContent='Dua';
-          const transBtn = document.createElement('button'); transBtn.className='toggle-btn'; transBtn.textContent='Translation';
-          const markUndone = document.createElement('button'); markUndone.className='btn'; markUndone.textContent='Mark Undone'; markUndone.style.marginLeft='8px';
+          const actions = document.createElement("div");
+          actions.className = "flex";
+          const duaBtn = document.createElement("button");
+          duaBtn.className = "toggle-btn";
+          duaBtn.textContent = "Dua";
+          const transBtn = document.createElement("button");
+          transBtn.className = "toggle-btn";
+          transBtn.textContent = "Translation";
+          const markUndone = document.createElement("button");
+          markUndone.className = "btn";
+          markUndone.textContent = "Mark Undone";
+          markUndone.style.marginLeft = "8px";
 
-          duaBtn.onclick = (ev) => { ev.stopPropagation(); duaBtn.classList.toggle('active'); renderDoneCardBody(body, d, duaBtn.classList.contains('active'), transBtn.classList.contains('active')); };
-          transBtn.onclick = (ev) => { ev.stopPropagation(); transBtn.classList.toggle('active'); renderDoneCardBody(body, d, duaBtn.classList.contains('active'), transBtn.classList.contains('active')); };
-          markUndone.onclick = (ev) => { ev.stopPropagation(); markAsUndone(student, d.id); };
+          duaBtn.onclick = (ev) => {
+            ev.stopPropagation();
+            duaBtn.classList.toggle("active");
+            renderDoneCardBody(
+              body,
+              d,
+              duaBtn.classList.contains("active"),
+              transBtn.classList.contains("active")
+            );
+          };
+          transBtn.onclick = (ev) => {
+            ev.stopPropagation();
+            transBtn.classList.toggle("active");
+            renderDoneCardBody(
+              body,
+              d,
+              duaBtn.classList.contains("active"),
+              transBtn.classList.contains("active")
+            );
+          };
+          markUndone.onclick = (ev) => {
+            ev.stopPropagation();
+            markAsUndone(student, d.id);
+          };
 
-          actions.appendChild(duaBtn); actions.appendChild(transBtn); actions.appendChild(markUndone);
+          actions.appendChild(duaBtn);
+          actions.appendChild(transBtn);
+          actions.appendChild(markUndone);
 
           titleRow.appendChild(actions);
           body.appendChild(titleRow);
           // content area
-          const content = document.createElement('div'); content.className = 'muted small'; content.style.marginTop='8px'; content.dataset.content = 'hidden'; body.appendChild(content);
+          const content = document.createElement("div");
+          content.className = "muted small";
+          content.style.marginTop = "8px";
+          content.dataset.content = "hidden";
+          body.appendChild(content);
 
-          li.appendChild(cb); li.appendChild(body);
+          li.appendChild(cb);
+          li.appendChild(body);
           ul.appendChild(li);
         });
       }
 
       function renderDoneCardBody(body, duaObj, showDua, showTrans) {
-        const content = body.querySelector('[data-content]'); content.innerHTML = '';
+        const content = body.querySelector("[data-content]");
+        content.innerHTML = "";
         if (showDua) {
-          const d = document.createElement('div'); d.className='dua-text arabic'; d.style.fontSize='1.2rem'; d.style.direction='rtl'; d.textContent = duaObj.dua; content.appendChild(d);
+          const d = document.createElement("div");
+          d.className = "dua-text arabic";
+          d.style.fontSize = "2.2rem";
+          d.style.direction = "rtl";
+          d.textContent = duaObj.dua;
+          content.appendChild(d);
         }
         if (showTrans) {
-          const t = document.createElement('div'); t.className='translation'; t.style.marginTop='6px'; t.textContent = duaObj.translation; content.appendChild(t);
+          const t = document.createElement("div");
+          t.className = "translation";
+          t.style.marginTop = "6px";
+          t.textContent = duaObj.translation;
+          content.appendChild(t);
         }
       }
 
       function toggleReportCheckbox(student, dateISO, duaId, cbEl) {
-        const reports = getReports(); if (!reports[student]) reports[student] = {}; if (!reports[student][dateISO]) reports[student][dateISO] = {};
+        const reports = getReports();
+        if (!reports[student]) reports[student] = {};
+        if (!reports[student][dateISO]) reports[student][dateISO] = {};
         const current = !!reports[student][dateISO][duaId];
-        reports[student][dateISO][duaId] = !current; saveReports(reports);
-        if (!current) cbEl.classList.add('checked'); else cbEl.classList.remove('checked');
+        reports[student][dateISO][duaId] = !current;
+        saveReports(reports);
+        if (!current) cbEl.classList.add("checked");
+        else cbEl.classList.remove("checked");
         // do not remove the dua card; only update report
         updateChartsIfVisible();
       }
 
       function markAsUndone(student, duaId) {
-        const states = getStates(); states[student][duaId] = 'started'; saveStates(states); renderDone(); renderHome();
+        const states = getStates();
+        states[student][duaId] = "started";
+        saveStates(states);
+        renderDone();
+        renderHome();
       }
 
       /* ---------- Reports & Charts ---------- */
-      let pieChart = null; let barChart = null;
+      let pieChart = null;
+      let barChart = null;
       function renderReport() {
-        currentPage = 'report'; renderTopBar(); document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-        $('report-screen').classList.add('active');
+        currentPage = "report";
+        renderTopBar();
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("active"));
+        $("report-screen").classList.add("active");
 
-        const student = getActiveStudent(); $('report-heading').textContent = `${student}'s duas report`;
+        const student = getActiveStudent();
+        $("report-heading").textContent = `${student}'s duas report`;
 
         // prepare data
-        const reports = getReports(); const studentReports = (reports[student]) ? Object.keys(reports[student]).sort() : [];
-        const done = getDoneDuasForStudent(student); const totalDone = done.length;
+        const reports = getReports();
+        const studentReports = reports[student]
+          ? Object.keys(reports[student]).sort()
+          : [];
+        const done = getDoneDuasForStudent(student);
+        const totalDone = done.length;
         if (!studentReports.length || totalDone === 0) {
           // clear charts and show placeholder
-          if (pieChart) pieChart.destroy(); if (barChart) barChart.destroy();
-          const pieCtx = document.getElementById('pieChart').getContext('2d'); pieCtx.clearRect(0,0,400,300);
-          const barCtx = document.getElementById('barChart').getContext('2d'); barCtx.clearRect(0,0,400,300);
+          if (pieChart) pieChart.destroy();
+          if (barChart) barChart.destroy();
+          const pieCtx = document.getElementById("pieChart").getContext("2d");
+          pieCtx.clearRect(0, 0, 400, 300);
+          const barCtx = document.getElementById("barChart").getContext("2d");
+          barCtx.clearRect(0, 0, 400, 300);
           return;
         }
 
         const latestDate = studentReports[studentReports.length - 1];
-        const appliedOnLatest = done.filter(d => reports[student][latestDate] && reports[student][latestDate][d.id]).length;
+        const appliedOnLatest = done.filter(
+          (d) =>
+            reports[student][latestDate] && reports[student][latestDate][d.id]
+        ).length;
         const notApplied = totalDone - appliedOnLatest;
 
-        const pieCtx = document.getElementById('pieChart').getContext('2d');
+        const pieCtx = document.getElementById("pieChart").getContext("2d");
         if (pieChart) pieChart.destroy();
         pieChart = new Chart(pieCtx, {
-          type: 'pie', data: { labels: ['Applied','Not applied'], datasets:[{ data:[appliedOnLatest, notApplied] }] }, options: { responsive:true, plugins:{legend:{position:'bottom'}} }
+          type: "pie",
+          data: {
+            labels: ["Applied", "Not applied"],
+            datasets: [{ data: [appliedOnLatest, notApplied] }],
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { position: "bottom" } },
+          },
         });
 
         // bar chart last 10 days
         const lastTen = studentReports.slice(-10);
-        const labels = lastTen.map(d => d);
-        const percents = lastTen.map(date => {
-          const applied = done.filter(x => reports[student][date] && reports[student][date][x.id]).length; return totalDone? Math.round((applied/totalDone)*100) : 0;
+        const labels = lastTen.map((d) => d);
+        const percents = lastTen.map((date) => {
+          const applied = done.filter(
+            (x) => reports[student][date] && reports[student][date][x.id]
+          ).length;
+          return totalDone ? Math.round((applied / totalDone) * 100) : 0;
         });
-        const barCtx = document.getElementById('barChart').getContext('2d'); if (barChart) barChart.destroy();
-        barChart = new Chart(barCtx, { type: 'bar', data: { labels, datasets:[{ label:'% applied', data: percents }] }, options:{ responsive:true, scales:{y:{ beginAtZero:true, max:100 }}, plugins:{legend:{display:false}} } });
+        const barCtx = document.getElementById("barChart").getContext("2d");
+        if (barChart) barChart.destroy();
+        barChart = new Chart(barCtx, {
+          type: "bar",
+          data: { labels, datasets: [{ label: "% applied", data: percents }] },
+          options: {
+            responsive: true,
+            scales: { y: { beginAtZero: true, max: 100 } },
+            plugins: { legend: { display: false } },
+          },
+        });
       }
 
-      function updateChartsIfVisible() { if (currentPage === 'report') renderReport(); }
+      function updateChartsIfVisible() {
+        if (currentPage === "report") renderReport();
+      }
 
       /* ---------- navigation helper ---------- */
       function goTo(page) {
-        if (page === 'home') renderHome();
-        else if (page === 'dua') renderDua();
-        else if (page === 'done') renderDone();
-        else if (page === 'report') renderReport();
+        if (page === "home") renderHome();
+        else if (page === "dua") renderDua();
+        else if (page === "done") renderDone();
+        else if (page === "report") renderReport();
       }
 
       function renderAll() {
-        initStates(); renderTopBar(); // preserve current page if possible
-        if (currentPage === 'home') renderHome();
-        else if (currentPage === 'dua') renderDua();
-        else if (currentPage === 'done') renderDone();
-        else if (currentPage === 'report') renderReport();
+        initStates();
+        renderTopBar(); // preserve current page if possible
+        if (currentPage === "home") renderHome();
+        else if (currentPage === "dua") renderDua();
+        else if (currentPage === "done") renderDone();
+        else if (currentPage === "report") renderReport();
       }
 
       /* ---------- initial boot ---------- */
       (function boot() {
-        ensureStudents(); initStates(); renderTopBar(); renderHome();
+        ensureStudents();
+        initStates();
+        renderTopBar();
+        renderHome();
 
         // on load, set student select listener
-        $('student-select').addEventListener('change', (e)=> setActiveStudent(e.target.value));
+        $("student-select").addEventListener("change", (e) =>
+          setActiveStudent(e.target.value)
+        );
 
         // make sure if user clicks outside, nothing breaks
-        window.addEventListener('storage', (e) => { if (e.key === LS_STUDENTS || e.key === LS_ACTIVE || e.key === LS_STATES || e.key === LS_REPORTS) renderAll(); });
+        window.addEventListener("storage", (e) => {
+          if (
+            e.key === LS_STUDENTS ||
+            e.key === LS_ACTIVE ||
+            e.key === LS_STATES ||
+            e.key === LS_REPORTS
+          )
+            renderAll();
+        });
       })();
 
       // helpful: expose functions for testing in console
       window._duasApp = { duas, getStates, getReports, renderAll };
-
     </script>
   </body>
 </html>
