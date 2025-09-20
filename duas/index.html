@@ -586,9 +586,6 @@
         border: 1px solid rgba(255, 255, 255, 0.08);
         transition: transform 0.3s ease-in-out;
       }
-      #quiz-app:hover {
-        transform: scale(1.01);
-      }
 
       /* ---------- Dua text + translation ---------- */
       .dua-text {
@@ -729,28 +726,22 @@
 
       <!-- DUA PAGE -->
       <section id="dua-screen" class="screen dua-page">
-        <div class="dua-page cardy">
-          <div class="space-between">
-            <div>
-              <div class="dua-title" id="dua-title"></div>
-              <div class="muted small" id="dua-counter"></div>
-            </div>
-            <div class="dua-controls" id="dua-controls-top"></div>
+        <div class="space-between">
+          <div>
+            <div class="dua-title" id="dua-title"></div>
+            <div class="muted small" id="dua-counter"></div>
           </div>
+          <div class="dua-controls" id="dua-controls-top"></div>
+        </div>
 
-          <div class="dua-full">
-            <div id="dua-text" class="dua-text arabic">&nbsp;</div>
-            <div id="dua-translation" class="translation">&nbsp;</div>
-          </div>
+        <div class="dua-full">
+          <div id="dua-text" class="dua-text arabic">&nbsp;</div>
+          <div id="dua-translation" class="translation">&nbsp;</div>
+        </div>
 
-          <div class="space-between" style="margin-top: 6px">
-            <div class="btn primary">
-              <button id="dua-prev" class="btn primary">◀</button>
-            </div>
-            <div class="btn primary">
-              <button id="dua-next" class="btn primary">▶</button>
-            </div>
-          </div>
+        <div class="space-between" style="margin-top: 6px">
+          <div id="dua-prev" class="btn primary">◀</div>
+          <div id="dua-next" class="btn primary">▶</div>
         </div>
       </section>
 
@@ -800,42 +791,315 @@
     <script>
       /* ---------- Data: duas (use ids) ---------- */
       const duas = [
+        // --- Eating & Drinking ---
         {
-          id: "d1",
+          id: 1,
           name: "Before Eating",
-          dua: "بِسْمِ اللَّهِ",
-          translation: "In the name of Allah",
+          dua: "بِسْمِ اللَّهِ وَعَلَى بَرَكَةِ اللَّهِ",
+          translation: "In the name of Allah and with His blessings.",
         },
         {
-          id: "d2",
+          id: 2,
+          name: "If Forgot Before Eating",
+          dua: "بِسْمِ اللَّهِ أَوَّلَهُ وَآخِرَهُ",
+          translation: "In the name of Allah, at the beginning and at the end.",
+        },
+        {
+          id: 3,
           name: "After Eating",
-          dua: "الْحَمْدُ لِلَّهِ",
-          translation: "All praise is for Allah",
-        },
-        {
-          id: "d3",
-          name: "Before Sleeping",
-          dua: "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا",
-          translation: "In Your name O Allah I live and die",
-        },
-        {
-          id: "d4",
-          name: "Waking Up",
-          dua: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا",
+          dua: "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا وَجَعَلَنَا مُسْلِمِينَ",
           translation:
-            "Praise be to Allah Who gave us life after He caused us to die",
+            "All praise is for Allah who fed us, gave us drink, and made us Muslims.",
         },
         {
-          id: "d5",
+          id: 4,
+          name: "Before Drinking Milk",
+          dua: "اللَّهُمَّ بَارِكْ لَنَا فِيهِ وَزِدْنَا مِنْهُ",
+          translation: "O Allah, bless it for us and increase us in it.",
+        },
+        {
+          id: 5,
+          name: "After Drinking Water",
+          dua: "الْحَمْدُ لِلَّهِ الَّذِي سَقَانَا عَذْبًا فُرَاتًا",
+          translation:
+            "All praise is for Allah who gave us fresh sweet water to drink.",
+        },
+
+        // --- Sleeping / Waking ---
+        {
+          id: 6,
+          name: "Before Sleeping",
+          dua: "اللَّهُمَّ بِاسْمِكَ أَمُوتُ وَأَحْيَا",
+          translation: "O Allah, in Your name I live and die.",
+        },
+        {
+          id: 7,
+          name: "After Waking Up",
+          dua: "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ",
+          translation:
+            "All praise is for Allah who gave us life after causing us to die, and to Him is the return.",
+        },
+        {
+          id: 8,
+          name: "When Turning in Bed",
+          dua: "لَا إِلَهَ إِلَّا اللَّهُ الْوَاحِدُ الْقَهَّارُ",
+          translation: "There is no god but Allah, the One, the Irresistible.",
+        },
+        {
+          id: 9,
+          name: "When Having a Good Dream",
+          dua: "الْحَمْدُ لِلَّهِ",
+          translation: "All praise is for Allah.",
+        },
+        {
+          id: 10,
+          name: "When Having a Bad Dream",
+          dua: "أَعُوذُ بِاللَّهِ مِنْ الشَّيْطَانِ",
+          translation: "I seek refuge in Allah from Shaytaan.",
+        },
+
+        // --- Toilet ---
+        {
+          id: 11,
+          name: "Before Entering Toilet",
+          dua: "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْخُبُثِ وَالْخَبَائِثِ",
+          translation:
+            "O Allah, I seek refuge in You from the male and female devils.",
+        },
+        {
+          id: 12,
+          name: "After Leaving Toilet",
+          dua: "غُفْرَانَكَ",
+          translation: "I seek Your forgiveness.",
+        },
+
+        // --- Home ---
+        {
+          id: 13,
           name: "Entering Home",
-          dua: "بِسْمِ اللَّهِ وَلَجْنَا",
-          translation: "In the name of Allah we enter",
+          dua: "بِسْمِ اللَّهِ وَلَجْنَا وَبِسْمِ اللَّهِ خَرَجْنَا",
+          translation:
+            "In the name of Allah we enter and in the name of Allah we leave.",
         },
         {
-          id: "d6",
+          id: 14,
           name: "Leaving Home",
-          dua: "بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ",
-          translation: "In the name of Allah, I place my trust in Allah",
+          dua: "بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ",
+          translation:
+            "In the name of Allah, I place my trust in Allah, and there is no power nor might except with Allah.",
+        },
+
+        // --- Masjid ---
+        {
+          id: 15,
+          name: "Entering Masjid",
+          dua: "اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ",
+          translation: "O Allah, open for me the doors of Your mercy.",
+        },
+        {
+          id: 16,
+          name: "Leaving Masjid",
+          dua: "اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ",
+          translation: "O Allah, I ask You from Your bounty.",
+        },
+
+        // --- Clothing ---
+        {
+          id: 17,
+          name: "Wearing New Clothes",
+          dua: "اللَّهُمَّ لَكَ الْحَمْدُ أَنْتَ كَسَوْتَنِيهِ",
+          translation: "O Allah, all praise is to You, You clothed me with it.",
+        },
+        {
+          id: 18,
+          name: "Seeing Someone in New Clothes",
+          dua: "تُبْلِي وَيُخْلِفُ اللَّهُ",
+          translation:
+            "May you wear it out and may Allah replace it for you with better.",
+        },
+        {
+          id: 19,
+          name: "When Undressing",
+          dua: "بِسْمِ اللَّهِ",
+          translation: "In the name of Allah.",
+        },
+
+        // --- Travel & Riding ---
+        {
+          id: 20,
+          name: "When Riding Vehicle",
+          dua: "سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ",
+          translation:
+            "Glory is to Him who has subjected this to us, and we could not have done it by ourselves.",
+        },
+        {
+          id: 21,
+          name: "Dua for Travel",
+          dua: "اللَّهُمَّ هَوِّنْ عَلَيْنَا سَفَرَنَا هَذَا",
+          translation: "O Allah, make this journey easy for us.",
+        },
+
+        // --- Knowledge / Study ---
+        {
+          id: 22,
+          name: "Before Studying",
+          dua: "رَبِّ زِدْنِي عِلْمًا",
+          translation: "My Lord, increase me in knowledge.",
+        },
+        {
+          id: 23,
+          name: "Dua for Understanding",
+          dua: "اللَّهُمَّ فَقِّهْنِي فِي الدِّينِ",
+          translation: "O Allah, grant me understanding of the religion.",
+        },
+
+        // --- Greetings & Manners ---
+        {
+          id: 24,
+          name: "When Greeting",
+          dua: "السَّلَامُ عَلَيْكُمْ",
+          translation: "Peace be upon you.",
+        },
+        {
+          id: 25,
+          name: "Replying to Salam",
+          dua: "وَعَلَيْكُمُ السَّلَامُ",
+          translation: "And upon you be peace.",
+        },
+        {
+          id: 26,
+          name: "After Sneezing",
+          dua: "الْحَمْدُ لِلَّهِ",
+          translation: "All praise is for Allah.",
+        },
+        {
+          id: 27,
+          name: "Reply to Sneezing",
+          dua: "يَرْحَمُكَ اللَّهُ",
+          translation: "May Allah have mercy on you.",
+        },
+
+        // --- Protection / Safety ---
+        {
+          id: 28,
+          name: "Morning Dua for Protection",
+          dua: "بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ",
+          translation:
+            "In the name of Allah, with whose name nothing on earth or heaven can harm.",
+        },
+        {
+          id: 29,
+          name: "Evening Dua for Protection",
+          dua: "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ",
+          translation: "O Allah, I seek refuge in You from worry and grief.",
+        },
+        {
+          id: 30,
+          name: "Dua When Afraid",
+          dua: "حَسْبِيَ اللَّهُ لَا إِلَهَ إِلَّا هُوَ",
+          translation: "Allah is sufficient for me, there is no god but Him.",
+        },
+
+        // --- Parents & Family ---
+        {
+          id: 31,
+          name: "For Parents",
+          dua: "رَبِّ ارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا",
+          translation:
+            "My Lord, have mercy on them as they raised me when I was small.",
+        },
+        {
+          id: 32,
+          name: "For Siblings & Friends",
+          dua: "اللَّهُمَّ اغْفِرْ لَنَا وَلِإِخْوَانِنَا",
+          translation: "O Allah, forgive us and our brothers.",
+        },
+
+        // --- Daily Activities ---
+        {
+          id: 33,
+          name: "When Entering Market",
+          dua: "لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ",
+          translation:
+            "None has the right to be worshipped but Allah alone without partner.",
+        },
+        {
+          id: 34,
+          name: "When Seeing Something Liked",
+          dua: "مَا شَاءَ اللَّهُ لَا قُوَّةَ إِلَّا بِاللَّهِ",
+          translation:
+            "What Allah willed happened; there is no power except with Allah.",
+        },
+        {
+          id: 35,
+          name: "When Angry",
+          dua: "أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ",
+          translation: "I seek refuge with Allah from the accursed Shaytaan.",
+        },
+        {
+          id: 36,
+          name: "When Sad",
+          dua: "إِنَّا لِلَّهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ",
+          translation: "We belong to Allah and to Him we return.",
+        },
+
+        // --- Morning & Evening Adhkar (Short) ---
+        {
+          id: 37,
+          name: "Morning Tasbeeh",
+          dua: "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ",
+          translation: "Glory be to Allah and praise is His.",
+        },
+        {
+          id: 38,
+          name: "Evening Tasbeeh",
+          dua: "أَسْتَغْفِرُ اللَّهَ",
+          translation: "I seek forgiveness from Allah.",
+        },
+        {
+          id: 39,
+          name: "Ayat-ul-Kursi (Protection)",
+          dua: "اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ...",
+          translation:
+            "Allah! None has the right to be worshipped except Him, the Ever-Living, the Sustainer of all.",
+        },
+        {
+          id: 40,
+          name: "Surah Ikhlas (Protection)",
+          dua: "قُلْ هُوَ اللَّهُ أَحَدٌ...",
+          translation: "Say: He is Allah, the One.",
+        },
+        {
+          id: 41,
+          name: "Surah Falaq (Protection)",
+          dua: "قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ...",
+          translation: "Say: I seek refuge with the Lord of daybreak.",
+        },
+        {
+          id: 42,
+          name: "Surah Nas (Protection)",
+          dua: "قُلْ أَعُوذُ بِرَبِّ النَّاسِ...",
+          translation: "Say: I seek refuge with the Lord of mankind.",
+        },
+
+        // --- Misc Useful ---
+        {
+          id: 43,
+          name: "Dua Before Doing Anything",
+          dua: "بِسْمِ اللَّهِ",
+          translation: "In the name of Allah.",
+        },
+        {
+          id: 44,
+          name: "Dua After Finishing Task",
+          dua: "الْحَمْدُ لِلَّهِ",
+          translation: "All praise is for Allah.",
+        },
+        {
+          id: 45,
+          name: "Dua for Guidance",
+          dua: "اللَّهُمَّ اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ",
+          translation: "O Allah, guide us to the straight path.",
         },
       ];
 
