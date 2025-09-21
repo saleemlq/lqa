@@ -57,10 +57,7 @@ function getCurrentClass(schedule) {
     const end = new Date(start.getTime() + 30 * 60000);
 
     if (now >= start && now < end) {
-      const dateStr = start.toISOString().split("T")[0];
-      const hh = String(start.getHours()).padStart(2, "0");
-      const mm = String(start.getMinutes()).padStart(2, "0");
-      return { time: `${dateStr} ${hh}:${mm}`, student: entry.student };
+      return { start, student: entry.student };
     }
   }
   return null;
@@ -77,13 +74,7 @@ function getNextClass(schedule) {
     }
   }
 
-  if (nearest) {
-    const dateStr = nearest.start.toISOString().split("T")[0];
-    const hh = String(nearest.start.getHours()).padStart(2, "0");
-    const mm = String(nearest.start.getMinutes()).padStart(2, "0");
-    return { time: `${dateStr} ${hh}:${mm}`, student: nearest.student };
-  }
-  return null;
+  return nearest;
 }
 
 function getListOfStudents(schedule) {
@@ -110,16 +101,34 @@ async function saveScheduleFromClipboard() {
     localStorage.setItem("schedule", JSON.stringify(schedule));
     localStorage.setItem("listOfStudents", JSON.stringify(students));
 
-    // decide active student
+    // decide active student + current class
     let activeStudent = null;
-    const currentClass = getCurrentClass(schedule);
+    let currentClass = getCurrentClass(schedule);
+
     if (currentClass) {
       activeStudent = currentClass.student;
+      // save current class in storage
+      const classTimeStr =
+        currentClass.start.getFullYear().toString() +
+        String(currentClass.start.getMonth() + 1).padStart(2, "0") +
+        String(currentClass.start.getDate()).padStart(2, "0") +
+        String(currentClass.start.getHours()).padStart(2, "0") +
+        String(currentClass.start.getMinutes()).padStart(2, "0");
+
+      localStorage.setItem(
+        "currentClass",
+        JSON.stringify({
+          studentName: currentClass.student,
+          classTime: classTimeStr
+        })
+      );
     } else {
       const nextClass = getNextClass(schedule);
       if (nextClass) {
         activeStudent = nextClass.student;
       }
+      // clear currentClass if no ongoing
+      localStorage.removeItem("currentClass");
     }
 
     if (activeStudent) {
