@@ -271,122 +271,110 @@
       </div>
     </div>
 
-    <script src="currentStudentFinder.js"></script>
+    <!-- <script src="currentStudentFinder.js"></script> -->
     <script>
-      let currentStudent = "";
-      const today = new Date().toISOString().split("T")[0];
+  let currentStudent = "";
+  let currentClassTime = ""; // store current class time
+  const today = new Date().toISOString().split("T")[0];
 
-      function stepField(name, change) {
-        const btn = document.getElementById(name + "Value");
-        let val = Number(btn.textContent) + change;
-        btn.textContent = Math.max(0, val);
-        triggerUpdate();
-      }
+  function stepField(name, change) {
+    const btn = document.getElementById(name + "Value");
+    let val = Number(btn.textContent) + change;
+    btn.textContent = Math.max(0, val);
+    triggerUpdate();
+  }
 
-      function updateSliderValue(slider) {
-        slider.parentElement.querySelector(".slider-value").textContent = slider.value;
-        triggerUpdate();
-      }
+  function updateSliderValue(slider) {
+    slider.parentElement.querySelector(".slider-value").textContent = slider.value;
+    triggerUpdate();
+  }
 
-      function updateScore() {
-        let base = 50;
-        document.querySelectorAll(".value-btn").forEach((btn) => {
-          let val = Number(btn.textContent);
-          let type = btn.id.replace("Value", "");
-          if (type === "smallMistakes") base += val * -5;
-          if (type === "bigMistakes") base += val * -10;
-          if (type === "correctedMistakes") base += val * 10;
-          if (type === "newLearnings") base += val * 10;
-        });
-        document.querySelectorAll("input[type=range]").forEach((inp) => { base += Number(inp.value) * 5; });
-        document.getElementById("scoreBox").textContent = "Score: " + base;
-        return base;
-      }
+  function updateScore() {
+    let base = 50;
+    document.querySelectorAll(".value-btn").forEach((btn) => {
+      let val = Number(btn.textContent);
+      let type = btn.id.replace("Value", "");
+      if (type === "smallMistakes") base += val * -5;
+      if (type === "bigMistakes") base += val * -10;
+      if (type === "correctedMistakes") base += val * 10;
+      if (type === "newLearnings") base += val * 10;
+    });
+    document.querySelectorAll("input[type=range]").forEach((inp) => { base += Number(inp.value) * 5; });
+    document.getElementById("scoreBox").textContent = "Score: " + base;
+    return base;
+  }
 
-      function saveDailyLog(score, data) {
-        if (!currentStudent) return;
-        let logs = JSON.parse(localStorage.getItem("dailyLogs") || "[]");
-        const idx = logs.findIndex(l => l.student === currentStudent && l.date === today);
-        if (idx !== -1) {
-          logs[idx].finalScore = score;
-          logs[idx].data = data;
-        } else {
-          logs.push({ student: currentStudent, date: today, baseScore: 50, finalScore: score, data });
-        }
-        localStorage.setItem("dailyLogs", JSON.stringify(logs));
-      }
+  function saveDailyLog(score, data) {
+    if (!currentStudent || !currentClassTime) return;
+    let logs = JSON.parse(localStorage.getItem("dailyLogs") || "[]");
+    const idx = logs.findIndex(l => l.student === currentStudent && l.date === today && l.classTime === currentClassTime);
+    if (idx !== -1) {
+      logs[idx].finalScore = score;
+      logs[idx].data = data;
+    } else {
+      logs.push({
+        student: currentStudent,
+        date: today,
+        classTime: currentClassTime,
+        baseScore: 50,
+        finalScore: score,
+        data
+      });
+    }
+    localStorage.setItem("dailyLogs", JSON.stringify(logs));
+  }
 
-      function triggerUpdate() {
-        let data = {};
-        document.querySelectorAll(".value-btn").forEach((btn) => data[btn.id.replace("Value", "")] = btn.textContent || "0");
-        document.querySelectorAll("input[type=range]").forEach((inp) => data[inp.name] = inp.value);
-        updateScore();
-        saveDailyLog(updateScore(), data);
-      }
+  function triggerUpdate() {
+    let data = {};
+    document.querySelectorAll(".value-btn").forEach((btn) => data[btn.id.replace("Value", "")] = btn.textContent || "0");
+    document.querySelectorAll("input[type=range]").forEach((inp) => data[inp.name] = inp.value);
+    const score = updateScore();
+    saveDailyLog(score, data);
+  }
 
-      function loadExistingLog() {
-        if (!currentStudent) return;
-        let logs = JSON.parse(localStorage.getItem("dailyLogs") || "[]");
-        const entry = logs.find(l => l.student === currentStudent && l.date === today);
-        if (entry) {
-          Object.keys(entry.data).forEach((key) => {
-            if (document.getElementById(key + "Value")) document.getElementById(key + "Value").textContent = entry.data[key];
-            const slider = document.querySelector(`input[name='${key}']`);
-            if (slider) slider.value = entry.data[key], slider.parentElement.querySelector(".slider-value").textContent = slider.value;
-          });
-        } else {
-          document.querySelectorAll(".value-btn").forEach((btn) => btn.textContent = "0");
-          document.querySelectorAll("input[type=range]").forEach((slider) => slider.value = 0);
-        }
-        updateScore();
-      }
+  function loadExistingLog() {
+    if (!currentStudent || !currentClassTime) return;
+    let logs = JSON.parse(localStorage.getItem("dailyLogs") || "[]");
+    const entry = logs.find(l => l.student === currentStudent && l.date === today && l.classTime === currentClassTime);
+    if (entry) {
+      Object.keys(entry.data).forEach((key) => {
+        const btn = document.getElementById(key + "Value");
+        if (btn) btn.textContent = entry.data[key];
+        const slider = document.querySelector(`input[name='${key}']`);
+        if (slider) slider.value = entry.data[key], slider.parentElement.querySelector(".slider-value").textContent = slider.value;
+      });
+    } else {
+      document.querySelectorAll(".value-btn").forEach((btn) => btn.textContent = "0");
+      document.querySelectorAll("input[type=range]").forEach((slider) => slider.value = 0);
+    }
+    updateScore();
+  }
 
-      function initSchedule() {
-        const savedSchedule = localStorage.getItem("regularSchedule");
-        const studentBox = document.getElementById("studentBox");
-        const scoreSection = document.getElementById("scoreSection");
+  function initSchedule() {
+    const studentBox = document.getElementById("studentBox");
+    const scoreSection = document.getElementById("scoreSection");
 
-        if (savedSchedule) {
-          const info = getCurrentOrNextClass(savedSchedule);
-          currentStudent = info.status === "current" ? info.student : "";
-          studentBox.textContent = currentStudent || "—";
-          document.getElementById("noteBox").textContent = info.note;
-        } else {
-          studentBox.textContent = "⚠️ No schedule";
-          document.getElementById("noteBox").textContent = "";
+    const storedClass = JSON.parse(localStorage.getItem("currentClass"));
+    if (storedClass) {
+      currentStudent = storedClass.studentName;
+      currentClassTime = storedClass.classTime;
+      studentBox.textContent = currentStudent || "—";
+      document.getElementById("noteBox").textContent = "Ongoing class";
+    } else {
+      studentBox.textContent = "⚠️ No current class";
+      document.getElementById("noteBox").textContent = "";
+      scoreSection.style.display = "none";
+    }
 
-          studentBox.style.cursor = "pointer";
-          studentBox.onclick = async () => {
-            try {
-              const text = await navigator.clipboard.readText();
-              if (text) {
-                localStorage.setItem("regularSchedule", text);
-                const info = getCurrentOrNextClass(text);
-                currentStudent = info.status === "current" ? info.student : "";
-                studentBox.textContent = currentStudent || "—";
-                document.getElementById("noteBox").textContent = info.note;
-                loadExistingLog();
-                studentBox.onclick = null;
-                studentBox.style.cursor = "default";
-                scoreSection.style.display = currentStudent ? "block" : "none";
-              } else alert("Clipboard is empty! Copy your schedule first.");
-            } catch (err) {
-              console.error("Failed to read clipboard:", err);
-              alert("Clipboard access denied or unsupported!");
-            }
-          };
-        }
+    scoreSection.style.display = currentStudent ? "block" : "none";
+    loadExistingLog();
+  }
 
-        // toggle score section visibility
-        scoreSection.style.display = currentStudent ? "block" : "none";
+  window.onload = () => {
+    initSchedule();
+    document.getElementById("viewReportBtn").addEventListener("click", () => window.location.href = "studentReport.html");
+  };
+</script>
 
-        loadExistingLog();
-      }
-
-      window.onload = () => {
-        initSchedule();
-        document.getElementById("viewReportBtn").addEventListener("click", () => window.location.href = "studentReport.html");
-      };
-    </script>
   </body>
 </html>
