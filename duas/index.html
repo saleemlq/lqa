@@ -324,13 +324,31 @@
       }
       .dua-full {
         display: flex;
-        flex-direction: column;
-        gap: 0.6rem;
+        flex-direction: row;
+        gap: 1rem;
         align-items: center;
         justify-content: center;
         padding: 1.2rem;
         min-height: 60vh;
       }
+
+      .dua-image {
+        max-width: 260px;
+        max-height: 200px;
+        border-radius: 12px;
+        object-fit: contain;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+      }
+
+      #dua-content {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+      }
+
       .dua-text {
         font-family: "Muhammadi", "Quicksand", sans-serif;
         direction: rtl;
@@ -739,8 +757,16 @@
         </div>
 
         <div class="dua-full">
-          <div id="dua-text" class="dua-text arabic">&nbsp;</div>
-          <div id="dua-translation" class="translation">&nbsp;</div>
+          <img
+            id="dua-image"
+            class="dua-image"
+            alt="Dua illustration"
+            style="display: none"
+          />
+          <div id="dua-content">
+            <div class="arabic dua-text" id="dua-text"></div>
+            <div class="translation" id="dua-translation"></div>
+          </div>
         </div>
 
         <div class="space-between" style="margin-top: 6px">
@@ -801,6 +827,7 @@
           name: "Before Eating",
           dua: "بِسْمِ اللّٰهِ وَعَلٰى بَرَكَةِ اللّٰهِ",
           translation: "In the name of Allah and with His blessings.",
+          image: "https://i.pinimg.com/736x/c8/9a/d3/c89ad30c02e74da519a688cb6f66a5b8.jpg"
         },
         {
           id: 2,
@@ -1358,9 +1385,21 @@
         const states = getStates();
         const st = states[student][currentDuaId];
         const d = duas.find((x) => x.id === currentDuaId);
+
+        // title + main text
         $("dua-title").textContent = d.name;
         $("dua-text").textContent = d.dua;
         $("dua-translation").textContent = d.translation;
+
+        // handle optional image
+        const imgEl = $("dua-image"); // <img id="dua-image"> must exist in HTML
+        if (d.image) {
+          imgEl.src = d.image;
+          imgEl.alt = `Illustration for ${d.name}`;
+          imgEl.style.display = "block";
+        } else {
+          imgEl.style.display = "none";
+        }
 
         // counter among undone duas
         const undone = getUndoneDuasForStudent(student);
@@ -1373,6 +1412,7 @@
         // top controls: Start/Skip and Mark Done
         const topCtr = $("dua-controls-top");
         topCtr.innerHTML = "";
+
         const startBtn = document.createElement("button");
         startBtn.className = "btn";
         startBtn.textContent = st === "started" ? "Skip" : "Start";
