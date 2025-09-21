@@ -13,7 +13,6 @@
         user-select: none;
         box-sizing: border-box;
       }
-
       html,
       body {
         height: 100%;
@@ -28,7 +27,6 @@
         position: relative;
         padding-right: 0.5rem;
       }
-
       body::before,
       body::after {
         content: "";
@@ -56,12 +54,14 @@
         opacity: 0.6;
         filter: blur(20px);
       }
-
       @keyframes bgMove {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
       }
-
       #daily-log {
         width: 100%;
         max-width: 320px;
@@ -78,10 +78,16 @@
         border: 1px solid rgba(255, 255, 255, 0.08);
         box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
       }
-
-      .section { display: flex; flex-direction: column; gap: 0.2rem; }
-
-      .logo-row { display: flex; justify-content: center; margin-bottom: 0.2rem; }
+      .section {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+      }
+      .logo-row {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 0.2rem;
+      }
       #logo {
         width: 100%;
         max-width: 200px;
@@ -91,7 +97,6 @@
           drop-shadow(0 0 1px #000000);
         margin-bottom: 12px;
       }
-
       .top-row {
         display: flex;
         justify-content: space-between;
@@ -112,10 +117,15 @@
         border-radius: 10px;
         cursor: pointer;
       }
-      #viewReportBtn:hover { background: #0af5d6; }
-
-      #noteBox { font-size: 0.75rem; color: #aaa; margin: 0.2rem 0; line-height: 1.1rem; }
-
+      #viewReportBtn:hover {
+        background: #0af5d6;
+      }
+      #noteBox {
+        font-size: 0.75rem;
+        color: #aaa;
+        margin: 0.2rem 0;
+        line-height: 1.1rem;
+      }
       #scoreBox {
         text-align: center;
         font-size: 0.95rem;
@@ -127,7 +137,6 @@
         color: #00ffc8;
         margin-bottom: 0.2rem;
       }
-
       .field {
         display: flex;
         align-items: center;
@@ -144,8 +153,10 @@
         border-radius: 10px;
         cursor: pointer;
       }
-      .field button.add:hover { background: #0af5d6; color: #111; }
-
+      .field button.add:hover {
+        background: #0af5d6;
+        color: #111;
+      }
       .field .value-btn {
         width: 36px;
         text-align: center;
@@ -157,9 +168,29 @@
         border-radius: 10px;
         cursor: pointer;
       }
-      .field .value-btn:hover { background: #0af5d6; color: #111; }
-
-      .slider-container { margin: 0.3rem 0; }
+      .field .value-btn:hover {
+        background: #0af5d6;
+        color: #111;
+      }
+      /* Small score buttons fit content */
+      .field .tiny-btn {
+        width: fit-content;
+        padding: 0 8px;
+        font-weight: bold;
+        font-size: 1rem;
+        background: #121212;
+        border: 1px solid #00ffc8;
+        color: #00ffc8;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      .field .tiny-btn:hover {
+        background: #0af5d6;
+        color: #111;
+      }
+      .slider-container {
+        margin: 0.3rem 0;
+      }
       .slider-label {
         display: flex;
         justify-content: space-between;
@@ -177,7 +208,6 @@
         cursor: pointer;
         padding-inline: 12px;
       }
-
       input[type="range"] {
         -webkit-appearance: none;
         width: 100%;
@@ -197,7 +227,9 @@
         cursor: pointer;
         transition: 0.2s;
       }
-      input[type="range"]::-webkit-slider-thumb:hover { background: #0af5d6; }
+      input[type="range"]::-webkit-slider-thumb:hover {
+        background: #0af5d6;
+      }
       input[type="range"]::-moz-range-thumb {
         width: 16px;
         height: 16px;
@@ -206,20 +238,36 @@
         border: 2px solid #0af5d6;
         cursor: pointer;
       }
+      .rain {
+        position: fixed;
+        top: -30px;
+        font-size: 16px;
+        opacity: 0.8;
+        animation-name: fall;
+        animation-timing-function: linear;
+        animation-iteration-count: 1;
+        z-index: 1000;
+        pointer-events: none;
+      }
+      @keyframes fall {
+        0% {
+          transform: translateY(0);
+        }
+        100% {
+          transform: translateY(100vh);
+          opacity: 0;
+        }
+      }
     </style>
   </head>
   <body>
-    <div id="sparkle-layer"></div>
-
     <div id="daily-log">
-      <!-- Section 1: Logo + student info -->
       <div class="section">
         <div class="logo-row">
           <img
             src="https://learnquraan.co.uk/vendor/local/imgs/hr-logo-white.svg"
             id="logo"
             alt="Logo"
-            style="width: 100%; max-width: 200px; filter: drop-shadow(0 0 4px #00ffc8);"
           />
         </div>
         <div class="top-row">
@@ -228,153 +276,326 @@
         </div>
         <div id="noteBox"></div>
       </div>
-
-      <!-- SCORE SECTION (hide if no current class) -->
       <div id="scoreSection">
         <div id="scoreBox">Score: 50</div>
-
-        <!-- Counters -->
         <div class="section">
           <div class="field">
-            <button class="add" onclick="stepField('smallMistakes',1)">✏️ Oopsies</button>
-            <button class="value-btn" onclick="stepField('smallMistakes',-1)" id="smallMistakesValue">0</button>
+            <button class="tiny-btn" onclick="changeScore(-1)">💔</button>
+            <button class="add" onclick="stepField('smallMistakes',1)">
+              ✏️ Oopsies
+            </button>
+            <button
+              class="value-btn"
+              onclick="stepField('smallMistakes',-1)"
+              id="smallMistakesValue"
+            >
+              0
+            </button>
+            
           </div>
           <div class="field">
-            <button class="add" onclick="stepField('bigMistakes',1)">📕 Uh-ohs</button>
-            <button class="value-btn" onclick="stepField('bigMistakes',-1)" id="bigMistakesValue">0</button>
+            <button class="add" onclick="stepField('bigMistakes',1)">
+              📕 Uh-ohs
+            </button>
+            <button
+              class="value-btn"
+              onclick="stepField('bigMistakes',-1)"
+              id="bigMistakesValue"
+            >
+              0
+            </button>
           </div>
           <div class="field">
-            <button class="add" onclick="stepField('correctedMistakes',1)">✅ Fix-its</button>
-            <button class="value-btn" onclick="stepField('correctedMistakes',-1)" id="correctedMistakesValue">0</button>
+            <button class="add" onclick="stepField('correctedMistakes',1)">
+              ✅ Fix-its
+            </button>
+            <button
+              class="value-btn"
+              onclick="stepField('correctedMistakes',-1)"
+              id="correctedMistakesValue"
+            >
+              0
+            </button>
           </div>
           <div class="field">
-            <button class="add" onclick="stepField('newLearnings',1)">🌟 Stars</button>
-            <button class="value-btn" onclick="stepField('newLearnings',-1)" id="newLearningsValue">0</button>
+            <button class="tiny-btn" onclick="changeScore(1)">🎉</button>
+            <button class="add" onclick="stepField('newLearnings',1)">
+              🌟 Stars
+            </button>
+            <button
+              class="value-btn"
+              onclick="stepField('newLearnings',-1)"
+              id="newLearningsValue"
+            >
+              0
+            </button>
+            
           </div>
         </div>
-
-        <!-- Sliders -->
         <div class="section">
           <div class="slider-container">
-            <div class="slider-label">😊 Behaviour <span class="slider-value">0</span></div>
-            <input type="range" name="behaviour" min="-2" max="2" value="0" step="1" data-type="neutral" oninput="updateSliderValue(this)" />
+            <div class="slider-label">
+              😊 Behaviour <span class="slider-value">0</span>
+            </div>
+            <input
+              type="range"
+              name="behaviour"
+              min="-2"
+              max="2"
+              value="0"
+              step="1"
+              oninput="updateSliderValue(this)"
+            />
           </div>
           <div class="slider-container">
-            <div class="slider-label">💬 Interaction <span class="slider-value">0</span></div>
-            <input type="range" name="interaction" min="-2" max="2" value="0" step="1" data-type="neutral" oninput="updateSliderValue(this)" />
+            <div class="slider-label">
+              💬 Interaction <span class="slider-value">0</span>
+            </div>
+            <input
+              type="range"
+              name="interaction"
+              min="-2"
+              max="2"
+              value="0"
+              step="1"
+              oninput="updateSliderValue(this)"
+            />
           </div>
           <div class="slider-container">
-            <div class="slider-label">🎯 Focus <span class="slider-value">0</span></div>
-            <input type="range" name="focus" min="-2" max="2" value="0" step="1" data-type="neutral" oninput="updateSliderValue(this)" />
+            <div class="slider-label">
+              🎯 Focus <span class="slider-value">0</span>
+            </div>
+            <input
+              type="range"
+              name="focus"
+              min="-2"
+              max="2"
+              value="0"
+              step="1"
+              oninput="updateSliderValue(this)"
+            />
           </div>
         </div>
       </div>
     </div>
-
-    <!-- <script src="currentStudentFinder.js"></script> -->
     <script>
-  let currentStudent = "";
-  let currentClassTime = ""; // store current class time
-  const today = new Date().toISOString().split("T")[0];
+      let currentStudent = "",
+        currentClassTime = "",
+        timerInterval = null,
+        lastScore = 50; // Track last milestone score
+      const today = new Date().toISOString().split("T")[0];
 
-  function stepField(name, change) {
-    const btn = document.getElementById(name + "Value");
-    let val = Number(btn.textContent) + change;
-    btn.textContent = Math.max(0, val);
-    triggerUpdate();
-  }
+      function stepField(name, change) {
+        const btn = document.getElementById(name + "Value");
+        let val = Number(btn.textContent) + change;
+        btn.textContent = Math.max(0, val);
+        triggerUpdate();
+      }
 
-  function updateSliderValue(slider) {
-    slider.parentElement.querySelector(".slider-value").textContent = slider.value;
-    triggerUpdate();
-  }
+      function updateSliderValue(slider) {
+        slider.parentElement.querySelector(".slider-value").textContent =
+          slider.value;
+        triggerUpdate();
+      }
 
-  function updateScore() {
-    let base = 50;
-    document.querySelectorAll(".value-btn").forEach((btn) => {
-      let val = Number(btn.textContent);
-      let type = btn.id.replace("Value", "");
-      if (type === "smallMistakes") base += val * -5;
-      if (type === "bigMistakes") base += val * -10;
-      if (type === "correctedMistakes") base += val * 10;
-      if (type === "newLearnings") base += val * 10;
-    });
-    document.querySelectorAll("input[type=range]").forEach((inp) => { base += Number(inp.value) * 5; });
-    document.getElementById("scoreBox").textContent = "Score: " + base;
-    return base;
-  }
+      function updateScore() {
+        let base = 50;
+        document.querySelectorAll(".value-btn").forEach((btn) => {
+          let val = Number(btn.textContent),
+            type = btn.id.replace("Value", "");
+          if (type === "smallMistakes") base += val * -5;
+          if (type === "bigMistakes") base += val * -10;
+          if (type === "correctedMistakes") base += val * 10;
+          if (type === "newLearnings") base += val * 10;
+        });
+        document
+          .querySelectorAll("input[type=range]")
+          .forEach((inp) => (base += Number(inp.value) * 5));
+        document.getElementById("scoreBox").textContent = "Score: " + base;
+        return base;
+      }
 
-  function saveDailyLog(score, data) {
-    if (!currentStudent || !currentClassTime) return;
-    let logs = JSON.parse(localStorage.getItem("dailyLogs") || "[]");
-    const idx = logs.findIndex(l => l.student === currentStudent && l.date === today && l.classTime === currentClassTime);
-    if (idx !== -1) {
-      logs[idx].finalScore = score;
-      logs[idx].data = data;
-    } else {
-      logs.push({
-        student: currentStudent,
-        date: today,
-        classTime: currentClassTime,
-        baseScore: 50,
-        finalScore: score,
-        data
-      });
-    }
-    localStorage.setItem("dailyLogs", JSON.stringify(logs));
-  }
+      function changeScore(amount) {
+        const scoreBox = document.getElementById("scoreBox");
+        let currentScore = Number(scoreBox.textContent.split(":")[1].trim());
+        currentScore += amount;
+        scoreBox.textContent = "Score: " + currentScore;
+        checkMilestone(currentScore);
+        saveDailyLog(currentScore, gatherData());
+      }
 
-  function triggerUpdate() {
-    let data = {};
-    document.querySelectorAll(".value-btn").forEach((btn) => data[btn.id.replace("Value", "")] = btn.textContent || "0");
-    document.querySelectorAll("input[type=range]").forEach((inp) => data[inp.name] = inp.value);
-    const score = updateScore();
-    saveDailyLog(score, data);
-  }
+      function checkMilestone(currentScore) {
+        if (currentScore - lastScore >= 5) {
+          spawnRain("positive");
+          lastScore = currentScore;
+        } else if (lastScore - currentScore >= 5) {
+          spawnRain("negative");
+          lastScore = currentScore;
+        }
+      }
 
-  function loadExistingLog() {
-    if (!currentStudent || !currentClassTime) return;
-    let logs = JSON.parse(localStorage.getItem("dailyLogs") || "[]");
-    const entry = logs.find(l => l.student === currentStudent && l.date === today && l.classTime === currentClassTime);
-    if (entry) {
-      Object.keys(entry.data).forEach((key) => {
-        const btn = document.getElementById(key + "Value");
-        if (btn) btn.textContent = entry.data[key];
-        const slider = document.querySelector(`input[name='${key}']`);
-        if (slider) slider.value = entry.data[key], slider.parentElement.querySelector(".slider-value").textContent = slider.value;
-      });
-    } else {
-      document.querySelectorAll(".value-btn").forEach((btn) => btn.textContent = "0");
-      document.querySelectorAll("input[type=range]").forEach((slider) => slider.value = 0);
-    }
-    updateScore();
-  }
+      function gatherData() {
+        let data = {};
+        document
+          .querySelectorAll(".value-btn")
+          .forEach(
+            (btn) =>
+              (data[btn.id.replace("Value", "")] = btn.textContent || "0")
+          );
+        document
+          .querySelectorAll("input[type=range]")
+          .forEach((inp) => (data[inp.name] = inp.value));
+        return data;
+      }
 
-  function initSchedule() {
-    const studentBox = document.getElementById("studentBox");
-    const scoreSection = document.getElementById("scoreSection");
+      function saveDailyLog(score, data) {
+        if (!currentStudent || !currentClassTime) return;
+        let logs = JSON.parse(localStorage.getItem("dailyLogs") || "[]");
+        const idx = logs.findIndex(
+          (l) =>
+            l.student === currentStudent &&
+            l.date === today &&
+            l.classTime === currentClassTime
+        );
+        if (idx !== -1) {
+          logs[idx].finalScore = score;
+          logs[idx].data = data;
+        } else {
+          logs.push({
+            student: currentStudent,
+            date: today,
+            classTime: currentClassTime,
+            baseScore: 50,
+            finalScore: score,
+            data,
+          });
+        }
+        localStorage.setItem("dailyLogs", JSON.stringify(logs));
+      }
 
-    const storedClass = JSON.parse(localStorage.getItem("currentClass"));
-    if (storedClass) {
-      currentStudent = storedClass.studentName;
-      currentClassTime = storedClass.classTime;
-      studentBox.textContent = currentStudent || "—";
-      document.getElementById("noteBox").textContent = "Ongoing class";
-    } else {
-      studentBox.textContent = "⚠️ No current class";
-      document.getElementById("noteBox").textContent = "";
-      scoreSection.style.display = "none";
-    }
+      function triggerUpdate() {
+        const newScore = updateScore();
+        checkMilestone(newScore);
+        saveDailyLog(newScore, gatherData());
+      }
 
-    scoreSection.style.display = currentStudent ? "block" : "none";
-    loadExistingLog();
-  }
+      function loadExistingLog() {
+        if (!currentStudent || !currentClassTime) return;
+        let logs = JSON.parse(localStorage.getItem("dailyLogs") || "[]");
+        const entry = logs.find(
+          (l) =>
+            l.student === currentStudent &&
+            l.date === today &&
+            l.classTime === currentClassTime
+        );
+        if (entry) {
+          Object.keys(entry.data).forEach((key) => {
+            const btn = document.getElementById(key + "Value");
+            if (btn) btn.textContent = entry.data[key];
+            const slider = document.querySelector(`input[name='${key}']`);
+            if (slider)
+              (slider.value = entry.data[key]),
+                (slider.parentElement.querySelector(
+                  ".slider-value"
+                ).textContent = slider.value);
+          });
+          lastScore = entry.finalScore; // restore last milestone
+        }
+        updateScore();
+      }
 
-  window.onload = () => {
-    initSchedule();
-    document.getElementById("viewReportBtn").addEventListener("click", () => window.location.href = "studentReport.html");
-  };
-</script>
+      function startClassTimer() {
+        const storedClass = JSON.parse(localStorage.getItem("currentClass"));
+        if (!storedClass) return;
+        currentStudent = storedClass.studentName;
+        currentClassTime = storedClass.classTime;
+        const noteBox = document.getElementById("noteBox");
+        const y = Number(currentClassTime.slice(0, 4)),
+          m = Number(currentClassTime.slice(4, 6)) - 1,
+          d = Number(currentClassTime.slice(6, 8)),
+          h = Number(currentClassTime.slice(8, 10)),
+          min = Number(currentClassTime.slice(10, 12));
+        const startDate = new Date(y, m, d, h, min),
+          endDate = new Date(startDate.getTime() + 30 * 60000);
 
+        function updateTimer() {
+          const now = new Date();
+          const diff = endDate - now;
+          if (diff <= 0) {
+            clearInterval(timerInterval);
+            noteBox.textContent = "Class ended ⏰";
+            removeFinishedClassAndLoadNext();
+            return;
+          }
+          const mins = Math.floor(diff / 60000),
+            secs = Math.floor((diff % 60000) / 1000);
+          noteBox.textContent = `Time left: ${String(mins).padStart(
+            2,
+            "0"
+          )}:${String(secs).padStart(2, "0")}`;
+        }
+        updateTimer();
+        timerInterval = setInterval(updateTimer, 1000);
+      }
+
+      function removeFinishedClassAndLoadNext() {
+        let allClasses = JSON.parse(localStorage.getItem("allClasses") || "[]");
+        allClasses = allClasses.filter(
+          (c) =>
+            !(
+              c.studentName === currentStudent &&
+              c.classTime === currentClassTime
+            )
+        );
+        localStorage.setItem("allClasses", JSON.stringify(allClasses));
+        localStorage.removeItem("currentClass");
+        if (allClasses.length > 0) {
+          localStorage.setItem("currentClass", JSON.stringify(allClasses[0]));
+        }
+        location.reload();
+      }
+
+      function initSchedule() {
+        const studentBox = document.getElementById("studentBox");
+        const scoreSection = document.getElementById("scoreSection");
+        const storedClass = JSON.parse(localStorage.getItem("currentClass"));
+        if (storedClass) {
+          currentStudent = storedClass.studentName;
+          currentClassTime = storedClass.classTime;
+          studentBox.textContent = currentStudent || "—";
+          scoreSection.style.display = "block";
+          startClassTimer();
+        } else {
+          studentBox.textContent = "⚠️ No current class";
+          document.getElementById("noteBox").textContent = "";
+          scoreSection.style.display = "none";
+        }
+        loadExistingLog();
+      }
+
+      function spawnRain(type) {
+        const emoji = type === "positive" ? "🎉" : "💔";
+        for (let i = 0; i < 12; i++) {
+          const span = document.createElement("span");
+          span.className = "rain";
+          span.style.left = Math.random() * 100 + "vw";
+          span.style.fontSize = 14 + Math.random() * 18 + "px";
+          span.style.animationDuration = 2 + Math.random() * 2 + "s";
+          span.textContent = emoji;
+          document.body.appendChild(span);
+          setTimeout(() => span.remove(), 4000);
+        }
+      }
+
+      window.onload = () => {
+        initSchedule();
+        document
+          .getElementById("viewReportBtn")
+          .addEventListener(
+            "click",
+            () => (window.location.href = "studentReport.html")
+          );
+      };
+    </script>
   </body>
 </html>
