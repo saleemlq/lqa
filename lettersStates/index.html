@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Arabic Letters - Click Zoom & Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #dcd0ff 25%, #f3e8ff 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #36013F;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1,
+        h2 {
+            text-align: center;
+            color: #36013F;
+        }
+
+        table {
+            width: 100%;
+            max-width: 1100px;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+            direction: rtl;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 8px 28px rgba(90, 39, 139, 0.2);
+        }
+
+        th,
+        td {
+            padding: 18px 22px;
+            text-align: center;
+            background-color: #f7f3ff;
+            border-radius: 8px;
+            font-family: 'Amiri', serif;
+            font-size: 1.6em;
+            user-select: none;
+        }
+
+        th {
+            background-color: #a481c1;
+            color: white;
+        }
+
+        td.arabic {
+            font-size: 2.4em;
+            font-weight: bold;
+            color: #36013F;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        /* Zoom effect on click */
+        td.arabic.zoomed {
+            transform: scale(1.3);
+            z-index: 10;
+            box-shadow: 0 0 12px 3px #6e3a9e88;
+            border-radius: 12px;
+            background-color: #e6dfff;
+        }
+
+        /* Quiz Section */
+        #quiz-section {
+            margin-top: 50px;
+            background: #ffffffdd;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            text-align: center;
+        }
+
+        #quiz-letter {
+            font-size: 4em;
+            font-family: 'Amiri', serif;
+            margin-bottom: 20px;
+            direction: rtl;
+            user-select: none;
+        }
+
+        select,
+        button {
+            padding: 10px 15px;
+            margin: 10px;
+            font-size: 1em;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background: #a481c1;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #6e3a9e;
+        }
+
+        #feedback {
+            font-size: 1.2em;
+            margin-top: 20px;
+            min-height: 1.4em;
+            font-weight: bold;
+        }
+
+        footer {
+            margin-top: 60px;
+            color: #6c2aa0;
+        }
+
+        footer .highlight {
+            color: #36013F;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Arabic Letters – All Forms</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Letter</th>
+                <th>Isolated</th>
+                <th>Initial</th>
+                <th>Medial</th>
+                <th>Final</th>
+            </tr>
+        </thead>
+        <tbody id="letter-table">
+            <!-- Letters inserted by JS -->
+        </tbody>
+    </table>
+    <h2>📝 Test Yourself</h2>
+    <div id="quiz-section">
+        <p style="font-size:1.2em;">Identify the letter and its form:</p>
+        <div id="quiz-letter">؟</div>
+        <label for="letterSelect"><strong>Letter:</strong></label>
+        <select id="letterSelect">
+            <option value="">-- Select Letter --</option>
+        </select>
+        <label for="formSelect"><strong>Form:</strong></label>
+        <select id="formSelect">
+            <option value="">-- Select Form --</option>
+            <option value="Isolated">Isolated</option>
+            <option value="Initial">Initial</option>
+            <option value="Medial">Medial</option>
+            <option value="Final">Final</option>
+        </select>
+        <br /><br />
+        <button onclick="checkAnswer()">Check Answer</button>
+        <button onclick="nextQuiz()">Next Letter</button>
+        <p id="feedback"></p>
+    </div>
+    <footer>
+        <p>📖 <strong>Presented by <span class="highlight">Learn Quran Group 3</span></strong></p>
+    </footer>
+    <script>
+        const letters = [
+
+            { name: "Alif", forms: { Isolated: "ا", Initial: "ا", Medial: "ـا", Final: "ـا" } },
+
+            { name: "Baa", forms: { Isolated: "ب", Initial: "بـ", Medial: "ـبـ", Final: "ـب" } },
+
+            { name: "Taa", forms: { Isolated: "ت", Initial: "تـ", Medial: "ـتـ", Final: "ـت" } },
+
+            { name: "Thaa", forms: { Isolated: "ث", Initial: "ثـ", Medial: "ـثـ", Final: "ـث" } },
+
+            { name: "Jeem", forms: { Isolated: "ج", Initial: "جـ", Medial: "ـجـ", Final: "ـج" } },
+
+            { name: "Haa", forms: { Isolated: "ح", Initial: "حـ", Medial: "ـحـ", Final: "ـح" } },
+
+            { name: "Khaa", forms: { Isolated: "خ", Initial: "خـ", Medial: "ـخـ", Final: "ـخ" } },
+
+            { name: "Daal", forms: { Isolated: "د", Initial: "د", Medial: "ـد", Final: "ـد" } },
+
+            { name: "Dhaal", forms: { Isolated: "ذ", Initial: "ذ", Medial: "ـذ", Final: "ـذ" } },
+
+            { name: "Raa", forms: { Isolated: "ر", Initial: "ر", Medial: "ـر", Final: "ـر" } },
+
+            { name: "Zay", forms: { Isolated: "ز", Initial: "ز", Medial: "ـز", Final: "ـز" } },
+
+            { name: "Seen", forms: { Isolated: "س", Initial: "سـ", Medial: "ـسـ", Final: "ـس" } },
+
+            { name: "Sheen", forms: { Isolated: "ش", Initial: "شـ", Medial: "ـشـ", Final: "ـش" } },
+
+            { name: "Saad", forms: { Isolated: "ص", Initial: "صـ", Medial: "ـصـ", Final: "ـص" } },
+
+            { name: "Daad", forms: { Isolated: "ض", Initial: "ضـ", Medial: "ـضـ", Final: "ـض" } },
+
+            { name: "Taa Heavy", forms: { Isolated: "ط", Initial: "طـ", Medial: "ـطـ", Final: "ـط" } },
+
+            { name: "Zaa", forms: { Isolated: "ظ", Initial: "ظـ", Medial: "ـظـ", Final: "ـظ" } },
+
+            { name: "Ayn", forms: { Isolated: "ع", Initial: "عـ", Medial: "ـعـ", Final: "ـع" } },
+
+            { name: "Ghayn", forms: { Isolated: "غ", Initial: "غـ", Medial: "ـغـ", Final: "ـغ" } },
+
+            { name: "Faa", forms: { Isolated: "ف", Initial: "فـ", Medial: "ـفـ", Final: "ـف" } },
+
+            { name: "Qaaf", forms: { Isolated: "ق", Initial: "قـ", Medial: "ـقـ", Final: "ـق" } },
+
+            { name: "Kaaf", forms: { Isolated: "ك", Initial: "كـ", Medial: "ـكـ", Final: "ـك" } },
+
+            { name: "Laam", forms: { Isolated: "ل", Initial: "لـ", Medial: "ـلـ", Final: "ـل" } },
+
+            { name: "Meem", forms: { Isolated: "م", Initial: "مـ", Medial: "ـمـ", Final: "ـم" } },
+
+            { name: "Noon", forms: { Isolated: "ن", Initial: "نـ", Medial: "ـنـ", Final: "ـن" } },
+
+            { name: "Ha", forms: { Isolated: "ه", Initial: "هـ", Medial: "ـهـ", Final: "ـه" } },
+
+            { name: "Waw", forms: { Isolated: "و", Initial: "و", Medial: "ـو", Final: "ـو" } },
+
+            { name: "Yaa", forms: { Isolated: "ي", Initial: "يـ", Medial: "ـيـ", Final: "ـي" } }
+
+        ];
+
+        // Insert letters into table
+
+        const tableBody = document.getElementById('letter-table');
+
+        letters.forEach(letter => {
+
+            const tr = document.createElement('tr');
+
+            const nameTd = document.createElement('td');
+
+            nameTd.textContent = letter.name;
+
+            tr.appendChild(nameTd);
+
+            ['Isolated', 'Initial', 'Medial', 'Final'].forEach(form => {
+
+                const td = document.createElement('td');
+
+                td.classList.add('arabic');
+
+                td.textContent = letter.forms[form];
+
+                tr.appendChild(td);
+
+            });
+
+            tableBody.appendChild(tr);
+
+        });
+
+        // Populate quiz select
+
+        const letterSelect = document.getElementById('letterSelect');
+
+        letters.forEach((letter, idx) => {
+
+            const option = document.createElement('option');
+
+            option.value = idx;
+
+            option.textContent = letter.name;
+
+            letterSelect.appendChild(option);
+
+        });
+
+        const formSelect = document.getElementById('formSelect');
+
+        const quizLetterDiv = document.getElementById('quiz-letter');
+
+        const feedback = document.getElementById('feedback');
+
+        let currentQuiz = { letterIndex: null, form: null };
+
+        function getRandomInt(max) {
+
+            return Math.floor(Math.random() * max);
+
+        }
+
+        function nextQuiz() {
+
+            feedback.textContent = "";
+
+            letterSelect.value = "";
+
+            formSelect.value = "";
+
+            // Random letter & form
+
+            const letterIndex = getRandomInt(letters.length);
+
+            const forms = ['Isolated', 'Initial', 'Medial', 'Final'];
+
+            const formIndex = getRandomInt(forms.length);
+
+            const form = forms[formIndex];
+
+            currentQuiz.letterIndex = letterIndex;
+
+            currentQuiz.form = form;
+
+            quizLetterDiv.textContent = letters[letterIndex].forms[form];
+
+        }
+
+        function checkAnswer() {
+
+            const selectedLetterIndex = letterSelect.value;
+
+            const selectedForm = formSelect.value;
+
+            if (selectedLetterIndex === "" || selectedForm === "") {
+
+                feedback.style.color = "red";
+
+                feedback.textContent = "Please select both Letter and Form!";
+
+                return;
+
+            }
+
+            if (parseInt(selectedLetterIndex) === currentQuiz.letterIndex && selectedForm === currentQuiz.form) {
+
+                feedback.style.color = "green";
+
+                feedback.textContent = "✅ Correct! Great job.";
+
+            } else {
+
+                const correctLetterName = letters[currentQuiz.letterIndex].name;
+
+                const correctForm = currentQuiz.form;
+
+                feedback.style.color = "red";
+
+                feedback.textContent = `❌ Incorrect! The correct answer is: ${correctLetterName} (${correctForm})`;
+
+            }
+
+        }
+
+        // Initialize quiz
+
+        nextQuiz();
+
+        // Handle click zoom on Arabic letters
+
+        document.querySelectorAll('td.arabic').forEach(td => {
+
+            td.addEventListener('click', () => {
+
+                // Remove zoom from any other letter
+
+                document.querySelectorAll('td.arabic.zoomed').forEach(z => {
+
+                    if (z !== td) z.classList.remove('zoomed');
+
+                });
+
+                // Toggle zoom on clicked letter
+
+                td.classList.toggle('zoomed');
+
+            });
+
+        });
+
+    </script>
+</body>
+
+</html>
