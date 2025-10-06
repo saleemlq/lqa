@@ -47,11 +47,13 @@ function loadStudents() {
     studentSelect.appendChild(option);
   });
 
-  const savedStudent = localStorage.getItem("selectedStudent");
-  if (savedStudent && students[savedStudent]) {
-    studentSelect.value = savedStudent;
-    title.innerText = `${savedStudent}'s Class Plans`;
-    loadPlans(savedStudent);
+  // ✅ Use 'activeStudent' as default; fallback to 'selectedStudent'
+  const activeStudent = localStorage.getItem("activeStudent") || localStorage.getItem("selectedStudent");
+
+  if (activeStudent && students[activeStudent]) {
+    studentSelect.value = activeStudent;
+    title.innerText = `${activeStudent}'s Class Plans`;
+    loadPlans(activeStudent);
   } else {
     plansContainer.innerHTML = "";
     title.innerText = "Student's Class Plans";
@@ -60,9 +62,11 @@ function loadStudents() {
   filterSelect.value = "incomplete"; // Default filter
 }
 
+// ✅ Sync both keys when student is changed
 studentSelect.onchange = () => {
   const selected = studentSelect.value;
   localStorage.setItem("selectedStudent", selected);
+  localStorage.setItem("activeStudent", selected); // keep in sync
   title.innerText = `${selected}'s Class Plans`;
   loadPlans(selected);
 };
