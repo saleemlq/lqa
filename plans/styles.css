@@ -1,0 +1,239 @@
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap");
+
+* {
+  font-family: "Quicksand", sans-serif !important;
+  box-sizing: border-box;
+  cursor: default;
+  user-select: none;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: radial-gradient(circle at top left, #101010, #0c0c0c 80%);
+  color: #f4f4f4;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+  z-index: 1;
+  padding-top: 50px;
+}
+
+/* glowing background layers */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+      ellipse at 30% 30%,
+      rgba(255, 235, 59, 0.06),
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at 70% 80%,
+      rgba(0, 255, 204, 0.04),
+      transparent 70%
+    );
+  animation: bgMove 40s infinite linear;
+  z-index: 0;
+  pointer-events: none;
+}
+body::after {
+  animation-direction: reverse;
+  opacity: 0.6;
+  filter: blur(20px);
+}
+@keyframes bgMove {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+#sparkle-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(
+    rgba(255, 255, 255, 0.05) 1px,
+    transparent 1px
+  );
+  background-size: 40px 40px;
+  animation: sparkleMove 20s linear infinite;
+  z-index: 0;
+  pointer-events: none;
+}
+@keyframes sparkleMove {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 100px 100px;
+  }
+}
+
+/* main container */
+#plans-wrapper {
+  width: 100%;
+  max-width: 800px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  border-radius: 20px;
+  padding: 2rem;
+  margin-inline: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
+  z-index: 1;
+  transition: 0.3s ease-in-out;
+}
+
+/* header */
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+h1 {
+  color: #ffe761;
+  font-size: 1.8rem;
+  margin: 0;
+  text-shadow: 0 0 8px rgba(255, 231, 97, 0.3);
+}
+
+.controls {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* dropdowns */
+select {
+  padding: 10px 14px;
+  background: #141414;
+  color: #fdfdfd;
+  border: 1px solid #444;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+select:hover,
+select:focus {
+  border-color: #00ffc8;
+  background-color: #1c1e27;
+  outline: none;
+}
+
+option {
+  background: #141414;
+  color: #fdfdfd;
+}
+
+/* plan cards */
+#plansContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.plan {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(145deg, #181818, #1e1e1e);
+  border: 1px solid #333;
+  padding: 16px 20px;
+  border-radius: 14px;
+  cursor: default;
+  font-size: 1rem;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  box-shadow: 0 0 8px rgba(0, 255, 204, 0.05),
+    inset 0 0 4px rgba(255, 255, 255, 0.02);
+  color: #eaeaea;
+}
+
+.plan:hover {
+  transform: translateY(-3px) scale(1.02);
+  border-color: #00ffc8;
+  box-shadow: 0 0 12px rgba(0, 255, 200, 0.3), 0 0 6px rgba(0, 255, 200, 0.1);
+  background: linear-gradient(145deg, #222, #292929);
+}
+
+.plan.completed {
+  background: linear-gradient(145deg, #093a2c, #0d4a35);
+  border-color: #00ffc8;
+  box-shadow: 0 0 12px rgba(0, 255, 200, 0.3);
+  color: #b6ffeb;
+}
+
+/* text input */
+textarea {
+  flex: 1;
+  font-size: 1rem;
+  border: none;
+  background: transparent;
+  color: #f4f4f4;
+  resize: none;
+  min-height: auto;
+  overflow-y: hidden;
+  outline: none;
+}
+
+textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* buttons */
+.actions {
+  display: none;
+  gap: 8px;
+  margin-left: 10px;
+}
+.plan:hover .actions {
+  display: flex;
+}
+
+button {
+  border: none;
+  background: linear-gradient(145deg, #222, #292929);
+  color: #fdfdfd;
+  border-radius: 10px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
+  font-size: 0.9rem;
+}
+button:hover {
+  border-color: #00ffc8;
+  background-color: #1c1e27;
+  color: #00ffc8;
+  transform: scale(1.05);
+}
+
+/* suggestion */
+.suggestion {
+  position: absolute;
+  bottom: 10px;
+  left: 14px;
+  color: rgba(255, 255, 255, 0.2);
+  pointer-events: none;
+  font-size: 0.9rem;
+}
