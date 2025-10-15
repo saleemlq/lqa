@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sifaat al-Lazimah — Comparison</title>
+<style>
+/* --- Fonts --- */
+@font-face {
+  font-family: 'Muhammadi';
+  src: url('../Muhammadi.ttf') format('truetype');
+}
+
+/* --- Base --- */
+html,body{
+  margin:0;
+  height:100%;
+  font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: linear-gradient(180deg,#f6f8fb 0%, #eef3f8 100%);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow:hidden;
+  direction: rtl;
+}
+
+:root {
+  --sidebar-width: 96px;
+  --sidebar-width-closed: 64px;
+  --header-bg: linear-gradient(135deg, #3a2a4f 0%, #2b1e39 100%);
+  --section-top: linear-gradient(135deg, #1c3f5a, #245f7b);
+  --section-bottom: linear-gradient(135deg, #5b3361, #7a4076);
+  --column-bg: rgba(255,255,255,0.06);
+  --accent: #0b5f82;
+}
+
+/* --- Sidebar (Right side) --- */
+#sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: var(--sidebar-width);
+  background: linear-gradient(180deg, #38667E 0%, #2b4e63 100%);
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  transition: transform 0.35s ease;
+  z-index: 50;
+  box-shadow: -2px 0 12px rgba(0, 0, 0, 0.15);
+  transform: translateX(0);
+}
+
+#sidebar.closed {
+  transform: translateX(100%);
+}
+
+/* --- Sidebar Toggle Button --- */
+#sidebarToggle {
+  position: fixed;
+  top: 12px;
+  right: calc(var(--sidebar-width) + 12px);
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 6px 18px rgba(11, 95, 130, 0.18);
+  transition: right 0.35s ease, transform 0.18s ease, background 0.18s ease;
+  z-index: 60;
+}
+
+/* Move the button back to the right edge when sidebar is closed */
+#sidebar.closed ~ #sidebarToggle {
+  right: 12px;
+}
+
+#sidebarToggle:hover {
+  transform: translateY(-3px);
+  background: #4aa0b8;
+}
+
+
+.letters-list {
+  margin-top:6px;
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  align-items:center;
+  overflow:auto;
+  padding-bottom:20px;
+}
+.letter-btn {
+  width:64px;
+  height:64px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: rgba(255,255,255,0.06);
+  color:white;
+  cursor:pointer;
+  font-family: 'Muhammadi';
+  font-size: 28px;
+  border:2px solid transparent;
+  transition: transform .12s ease, border-color .12s ease, background .12s ease, box-shadow .12s ease;
+  user-select:none;
+}
+.letter-btn:hover { transform: translateY(-3px); }
+.letter-btn.selected {
+  background: #fff;
+  color: var(--accent);
+  border-color: rgba(255,255,255,0.12);
+  box-shadow: 0 10px 24px rgba(11,95,130,0.12);
+  font-weight:700;
+}
+.sidebar-foot {
+  margin-top:auto;
+  font-size:12px;
+  color: rgba(255,255,255,0.9);
+  text-align:center;
+  padding-bottom:10px;
+}
+
+/* --- Page Layout --- */
+.main {
+  margin-right: var(--sidebar-width);
+  transition: margin-right .28s ease;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+.main.sidebar-closed { margin-right: 0; }
+
+/* --- Header --- */
+header.app-header {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:28px;
+  background: var(--header-bg);
+  padding: 16px 24px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  flex-shrink:0;
+}
+.header-letters {
+  display:flex;
+  gap:18px;
+  align-items:center;
+  justify-content:center;
+}
+.header-letter {
+  font-family: 'Muhammadi';
+  color: #fff;
+  font-size: clamp(4rem, 16vw, 12rem);
+  line-height:1;
+  user-select:none;
+  text-align:center;
+}
+.count-card {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-width:140px;
+  height:86px;
+  border-radius:16px;
+  padding: 12px 20px;
+  background: rgba(255,255,255,0.18);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.14);
+  border: 2px solid rgba(255,255,255,0.14);
+  color: #fff;
+  font-weight:700;
+  font-size: clamp(1.2rem, 3.8vw, 2.6rem);
+}
+
+/* --- Content --- */
+#content {
+  flex:1;
+  overflow:auto;
+  display:flex;
+  flex-direction:column;
+}
+
+/* --- Sections --- */
+.single-sections {
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+.section-row {
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:20px;
+  padding:16px;
+  box-sizing:border-box;
+}
+.section-top { background: var(--section-top); }
+.section-bottom { background: var(--section-bottom); }
+
+/* --- Comparison --- */
+.columns {
+  flex:1;
+  display:flex;
+  gap:18px;
+  padding:18px;
+  background: linear-gradient(180deg,#5b3361 0%, #7a4076 100%);
+  box-sizing:border-box;
+}
+.column {
+  background: var(--column-bg);
+  flex:1;
+  border-radius:14px;
+  padding:18px;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  align-items:center;
+  overflow:auto;
+}
+.column .col-header {
+  font-family:'Muhammadi';
+  font-size: clamp(1.2rem, 5vw, 3rem);
+  color: #fff;
+  margin-bottom:6px;
+}
+
+/* --- Cards --- */
+.card {
+  position:relative;
+  width: min(220px, 20vw);
+  background:#fff;
+  border-radius:14px;
+  padding:12px 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  text-align:center;
+  cursor:pointer;
+  transition: transform .12s ease, background .12s ease;
+  font-family:'Muhammadi';
+  font-size: clamp(1rem, 3.6vw, 2.6rem);
+}
+.card:hover { transform: translateY(-6px); background:#f5f5ff; }
+
+.card .meaning {
+  display:none;
+  font-family: Poppins, sans-serif;
+  font-size: clamp(0.8rem, 2.6vw, 1.4rem);
+  color:#333;
+}
+.card .opposite {
+  display:none;
+  font-family: Poppins, sans-serif;
+  font-size: clamp(0.75rem, 2vw, 1.2rem);
+  color:#990000;
+}
+
+/* small text */
+.small-note { font-family:'Poppins'; font-size:clamp(.7rem,1.6vw,1.1rem); color: rgba(255,255,255,0.85); }
+.center-vertical { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; }
+
+@media (max-width:900px){
+  .count-card { height:68px; padding:10px 16px; min-width:120px; }
+  .card { width:38vw; }
+}
+</style>
+</head>
+<body>
+
+<button id="sidebarToggle" aria-label="Toggle Sidebar">☰</button>
+
+<div id="sidebar">
+  <div class="letters-list" id="lettersList"></div>
+  <div class="sidebar-foot small-note" id="sidebarHint">Select 1–3 letters</div>
+</div>
+
+<div class="main" id="main">
+  <header class="app-header" id="appHeader">
+    <div class="count-card" id="countCard">5 صفات</div>
+    <div class="header-letters" id="headerLetters"></div>
+  </header>
+  <div id="content"></div>
+</div>
+
+<script>
+// ---------- Siffat Master Data ----------
+const siffatList = [
+  { id: 'jahr', name: 'الجهر', meaning: 'Voiced', opposite: 'الهمس' },
+  { id: 'hams', name: 'الهمس', meaning: 'Breathy', opposite: 'الجهر' },
+  { id: 'shiddah', name: 'الشدة', meaning: 'Stop', opposite: 'الرخاوة' },
+  { id: 'rikhaawah', name: 'الرخاوة', meaning: 'Flow', opposite: 'الشدة' },
+  { id: 'tawassut', name: 'التوسط', meaning: 'Between', opposite: 'الشدة/الرخاوة' },
+  { id: 'isti‘la', name: 'الاستعلاء', meaning: 'High tongue', opposite: 'الاستفال' },
+  { id: 'istifal', name: 'الاستفال', meaning: 'Low tongue', opposite: 'الاستعلاء' },
+  { id: 'itbaaq', name: 'الاطباق', meaning: 'Closed mouth', opposite: 'الانفتاح' },
+  { id: 'infitaah', name: 'الانفتاح', meaning: 'Open mouth', opposite: 'الاطباق' },
+  { id: 'idhlaq', name: 'الاذلاق', meaning: 'Easy articulation', opposite: 'الاصمات' },
+  { id: 'ismat', name: 'الاصمات', meaning: 'Heavy articulation', opposite: 'الاذلاق' },
+  { id: 'qalqalah', name: 'القلقلة', meaning: 'Echo', opposite: '-' },
+  { id: 'leenu', name: 'اللين', meaning: 'Soft', opposite: '-' },
+  { id: 'safir', name: 'الصفير', meaning: 'Whistle', opposite: '-' },
+  { id: 'takreer', name: 'التكرير', meaning: 'Vibration', opposite: '-' },
+  { id: 'inḥiraaf', name: 'الانحراف', meaning: 'Bend', opposite: '-' },
+  { id: 'tafkheem', name: 'التفخيم', meaning: 'Heavy', opposite: 'الترقيق' },
+  { id: 'tarqeeq', name: 'الترقيق', meaning: 'Light', opposite: 'التفخيم' },
+  { id: 'tafashshi', name: 'التفشي', meaning: 'Spread of sound', opposite: '-' },
+  { id: 'istitālah', name: 'الاستطالة', meaning: 'Extension of sound', opposite: '-' },
+  { id: 'ghunnah', name: 'الغنة', meaning: 'Nasal sound', opposite: '-' },
+];
+
+
+
+// ---------- Letter Data ----------
+const letters = [
+  { letter: 'ا', mutadhadah: ['jahr','shiddah','istifal','infitaah','ismat'], ghayr: [] },
+  { letter: 'ب', mutadhadah: ['jahr','shiddah','istifal','infitaah','idhlaq'], ghayr: ['qalqalah'] },
+  { letter: 'ت', mutadhadah: ['hams','shiddah','istifal','infitaah','ismat'], ghayr: [] },
+  { letter: 'ث', mutadhadah: ['hams','rikhaawah','istifal','infitaah','ismat'], ghayr: [] },
+  { letter: 'ج', mutadhadah: ['jahr','shiddah','istifal','infitaah','ismat'], ghayr: ['qalqalah'] },
+  { letter: 'ح', mutadhadah: ['hams','rikhaawah','istifal','infitaah','ismat'], ghayr: [] },
+  { letter: 'خ', mutadhadah: ['hams','rikhaawah','isti‘la','infitaah','ismat'], ghayr: [] },
+  { letter: 'د', mutadhadah: ['jahr','shiddah','istifal','infitaah','ismat'], ghayr: ['qalqalah'] },
+  { letter: 'ذ', mutadhadah: ['jahr','rikhaawah','istifal','infitaah','ismat'], ghayr: [] },
+  { letter: 'ر', mutadhadah: ['jahr','tawassut','istifal','infitaah','idhlaq'], ghayr: ['takreer', 'inḥiraaf'] },
+  { letter: 'ز', mutadhadah: ['jahr','rikhaawah','istifal','infitaah','ismat'], ghayr: ['safir'] },
+  { letter: 'س', mutadhadah: ['hams','rikhaawah','istifal','infitaah','ismat'], ghayr: ['safir'] },
+  { letter: 'ش', mutadhadah: ['hams','rikhaawah','istifal','infitaah','ismat'], ghayr: ['tafashshi'] },
+  { letter: 'ص', mutadhadah: ['hams','rikhaawah','isti‘la','itbaaq','ismat'], ghayr: ['safir'] },
+  { letter: 'ض', mutadhadah: ['jahr','rikhaawah','isti‘la','itbaaq','ismat'], ghayr: ['istitālah'] },
+  { letter: 'ط', mutadhadah: ['jahr','shiddah','isti‘la','itbaaq','ismat'], ghayr: ['qalqalah'] },
+  { letter: 'ظ', mutadhadah: ['jahr','rikhaawah','isti‘la','itbaaq','ismat'], ghayr: [] },
+  { letter: 'ع', mutadhadah: ['jahr','tawassut','istifal','infitaah','ismat'], ghayr: [] },
+  { letter: 'غ', mutadhadah: ['jahr','rikhaawah','isti‘la','infitaah','ismat'], ghayr: [] },
+  { letter: 'ف', mutadhadah: ['hams','rikhaawah','istifal','infitaah','idhlaq'], ghayr: [] },
+  { letter: 'ق', mutadhadah: ['jahr','shiddah','isti‘la','infitaah','ismat'], ghayr: ['qalqalah'] },
+  { letter: 'ك', mutadhadah: ['hams','shiddah','istifal','infitaah','ismat'], ghayr: [] },
+  { letter: 'ل', mutadhadah: ['jahr','tawassut','istifal','infitaah','idhlaq'], ghayr: ['inḥiraaf'] },
+  { letter: 'م', mutadhadah: ['jahr','tawassut','istifal','infitaah','idhlaq'], ghayr: ['ghunnah'] },
+  { letter: 'ن', mutadhadah: ['jahr','tawassut','istifal','infitaah','idhlaq'], ghayr: ['ghunnah'] },
+  { letter: 'و', mutadhadah: ['jahr','rikhaawah','istifal','infitaah','ismat'], ghayr: ['leenu'] },
+  { letter: 'ه', mutadhadah: ['hams','rikhaawah','istifal','infitaah','ismat'], ghayr: [] },
+  { letter: 'ء', mutadhadah: ['jahr','shiddah','istifal','infitaah','ismat'], ghayr: [] },
+  { letter: 'ي', mutadhadah: ['jahr','rikhaawah','istifal','infitaah','ismat'], ghayr: ['leenu'] }
+];
+
+const findSiffat = id => siffatList.find(s => s.id === id) || { name:id,meaning:'',opposite:'' };
+const unique = arr => Array.from(new Set(arr));
+function intersection(arrs){ if(!arrs.length) return []; return arrs.reduce((a,b)=>a.filter(x=>b.includes(x))); }
+function difference(a,b){ return a.filter(x=>!b.includes(x)); }
+
+let selectedIndices=[0];
+let sidebarOpen=true;
+const sidebar=document.getElementById('sidebar');
+const sidebarToggle=document.getElementById('sidebarToggle');
+const lettersList=document.getElementById('lettersList');
+const main=document.getElementById('main');
+const headerLetters=document.getElementById('headerLetters');
+const countCard=document.getElementById('countCard');
+const content=document.getElementById('content');
+
+function renderSidebar(){
+  lettersList.innerHTML='';
+  letters.forEach((lt,idx)=>{
+    const btn=document.createElement('button');
+    btn.className='letter-btn'+(selectedIndices.includes(idx)?' selected':'');
+    btn.innerHTML=`<span>${lt.letter}</span>`;
+    btn.onclick=()=>toggleSelect(idx,btn);
+    lettersList.appendChild(btn);
+  });
+}
+renderSidebar();
+
+sidebarToggle.onclick=()=>{
+  sidebarOpen=!sidebarOpen;
+  sidebar.classList.toggle('closed',!sidebarOpen);
+  main.classList.toggle('sidebar-closed',!sidebarOpen);
+};
+
+function toggleSelect(idx,btn){
+  const isSel=selectedIndices.includes(idx);
+  if(isSel){
+    if(selectedIndices.length===1){flashButton(btn);return;}
+    selectedIndices=selectedIndices.filter(i=>i!==idx);
+  }else{
+    if(selectedIndices.length>=3){flashButton(btn);return;}
+    selectedIndices.push(idx);
+  }
+  renderSidebar(); renderMain();
+}
+function flashButton(el){ if(!el)return; el.animate([{transform:'scale(1.05)'},{transform:'scale(1)'}],{duration:220}); }
+
+function getAllSiffatKeysForLetter(idx){
+  const L=letters[idx];
+  return unique([...(L.mutadhadah||[]),...(L.ghayr||[])]);
+}
+
+function renderMain(){
+  const header=document.getElementById('appHeader');
+  if(selectedIndices.length===1){ header.style.display='flex'; renderSingleView(selectedIndices[0]); }
+  else{ header.style.display='none'; renderComparisonView(selectedIndices); }
+  renderSidebar();
+}
+
+function makeCard(s,isMut){
+  const opp=isMut?`<div class="opposite">Opposite: ${s.opposite}</div>`:'';
+  return `<div class="card" 
+      onmouseenter="this.querySelector('.title').style.display='none';this.querySelector('.meaning').style.display='block';${isMut?'this.querySelector(\'.opposite\').style.display=\'block\';':''}" 
+      onmouseleave="this.querySelector('.title').style.display='block';this.querySelector('.meaning').style.display='none';${isMut?'this.querySelector(\'.opposite\').style.display=\'none\';':''}">
+      <div class="title">${s.name}</div>
+      <div class="meaning">${s.meaning}</div>
+      ${opp}
+  </div>`;
+}
+
+function renderSingleView(idx){
+  const L=letters[idx];
+  headerLetters.innerHTML=`<div class="header-letter">${L.letter}</div>`;
+  const total=L.mutadhadah.length+(L.ghayr?L.ghayr.length:0);
+  countCard.innerHTML=`<span style="font-family:Poppins;">${total}</span>&nbsp;<span style="font-family:Muhammadi;">صفات</span>`;
+  content.innerHTML=`
+    <div class="single-sections">
+      <div class="section-row section-top" id="mutTop"></div>
+      <div class="section-row section-bottom" id="ghayrBottom"></div>
+    </div>`;
+  const mutTop=document.getElementById('mutTop');
+  const ghayrBottom=document.getElementById('ghayrBottom');
+  mutTop.innerHTML=(L.mutadhadah||[]).map(k=>makeCard(findSiffat(k),true)).join('')||`<div class="small-note">—</div>`;
+  ghayrBottom.innerHTML=(L.ghayr||[]).map(k=>makeCard(findSiffat(k),false)).join('')||`<div class="small-note">—</div>`;
+}
+
+function renderComparisonView(indices){
+  headerLetters.innerHTML=indices.map(i=>`<div class="header-letter">${letters[i].letter}</div>`).join('');
+  const allKeys=indices.map(i=>getAllSiffatKeysForLetter(i));
+  const common=intersection(allKeys);
+
+  countCard.innerHTML=`<span style="font-family:Poppins;">${common.length}</span>&nbsp;<span style="font-family:Muhammadi;">صفات مشتركة</span>`;
+
+  let html=`<div class="columns">`;
+
+  // 🟢 Common section
+  html+=`<div class="column"><div class="col-header">مشتركة</div>`;
+  if(common.length){
+    html+=common.map(k=>{
+      const s=findSiffat(k);
+      return makeCard(s,true);
+    }).join('');
+  } else {
+    html+=`<div class="small-note">لا يوجد صفات مشتركة</div>`;
+  }
+  html+=`</div>`;
+
+  // 🟠 Individual sections for each letter
+  indices.forEach(idx=>{
+    const L=letters[idx];
+    const myAll=getAllSiffatKeysForLetter(idx);
+    const uniq=difference(myAll,common);
+    html+=`<div class="column"><div class="col-header">${L.letter}</div>`;
+    if(uniq.length){
+      html+=uniq.map(k=>{
+        const s=findSiffat(k);
+        return makeCard(s,true);
+      }).join('');
+    } else {
+      html+=`<div class="small-note">—</div>`;
+    }
+    html+=`</div>`;
+  });
+
+  html+=`</div>`;
+  content.innerHTML=html;
+}
+
+// ⌨️ Keyboard navigation for next/prev letter (↑ ↓ arrows)
+document.addEventListener('keydown', e=>{
+  if(selectedIndices.length!==1) return;
+  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){
+    let cur=selectedIndices[0];
+    let next=cur;
+    if(e.key==='ArrowRight' || e.key==='ArrowDown') next=(cur+1)%letters.length;
+    if(e.key==='ArrowLeft' || e.key==='ArrowUp') next=(cur-1+letters.length)%letters.length;
+    selectedIndices=[next];
+    renderMain();
+  }
+});
+
+/* 🔹 Initialize */
+renderMain();
+</script>
+
+</body>
+</html>
