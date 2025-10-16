@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Surah Details</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; background: #f7f8fa; }
+    .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .back { text-decoration: none; color: #333; display: inline-block; margin-bottom: 15px; }
+    h2 { text-align: center; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    td { padding: 8px; border-bottom: 1px solid #eee; }
+    td:first-child { font-weight: bold; width: 40%; }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="back">⬅ Back to list</a>
+  <div class="container">
+    <h2 id="surahTitle">Loading...</h2>
+    <table id="details"></table>
+  </div>
+
+  <script>
+    const FULL_URL = "https://raw.githubusercontent.com/saleemlq/static-database/main/surahs/surahs_full.json";
+
+    const params = new URLSearchParams(window.location.search);
+    const surahNo = params.get("no");
+
+    fetch(FULL_URL)
+      .then(res => res.json())
+      .then(data => {
+        const surah = data.find(s => s["Surah No."] == surahNo);
+        if (!surah) {
+          document.getElementById("surahTitle").innerText = "Surah not found!";
+          return;
+        }
+
+        document.getElementById("surahTitle").innerText = `${surah["In English"]} (${surah["Surah Name"]})`;
+
+        const table = document.getElementById("details");
+        table.innerHTML = Object.entries(surah)
+          .map(([key, value]) => `<tr><td>${key}</td><td>${value}</td></tr>`)
+          .join("");
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById("surahTitle").innerText = "Error loading data.";
+      });
+  </script>
+</body>
+</html>
