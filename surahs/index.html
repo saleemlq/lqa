@@ -4,89 +4,56 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Surah List</title>
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    /* --- Use your provided CSS --- */
-    /* (Paste your CSS block here exactly as you shared it) */
-
-    main {
-      flex: 1;
-      overflow-y: auto;
-      padding-top: 80px;
-    }
-
-    .table-header {
-      position: fixed;
-      top: 0;
-      width: 100%;
-      background: rgba(255,255,255,0.03);
-      backdrop-filter: blur(16px);
-      display: grid;
-      grid-template-columns: 80px 1fr 80px;
-      padding: 1rem 2rem;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      color: #ffe761;
-      z-index: 3;
-      text-align: center;
-    }
-
-    .surah-row {
-      display: grid;
-      grid-template-columns: 80px 1fr 80px;
-      padding: 1rem 2rem;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+    body { font-family: sans-serif; margin: 20px; background: #f7f8fa; }
+    h1 { text-align: center; }
+    .surah-card {
+      background: white;
+      margin: 10px auto;
+      padding: 10px 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      max-width: 500px;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: transform 0.2s;
     }
-    .surah-row:hover {
-      background: rgba(255,255,255,0.05);
-    }
-
-    .back-btn {
-      position: fixed;
-      top: 1rem;
-      left: 1rem;
-      color: #00ffc8;
-      font-weight: bold;
-      cursor: pointer;
-      z-index: 4;
-    }
+    .surah-card:hover { transform: scale(1.02); }
+    .surah-name { font-size: 1.1em; font-weight: bold; }
+    .juz { color: #555; }
   </style>
 </head>
 <body>
-  <div class="back-btn" onclick="window.location.href='main.html'">⬅ Back</div>
-
-  <div class="table-header">
-    <div>No.</div>
-    <div>Surah Name</div>
-    <div>Juz</div>
-  </div>
-
-  <main id="surahList">Loading...</main>
+  <h1>📖 Surah List</h1>
+  <div id="surahList">Loading...</div>
 
   <script>
     const MIN_URL = "https://raw.githubusercontent.com/saleemlq/static-database/main/surahs/surahs_min.json";
-    const list = document.getElementById("surahList");
+    const listDiv = document.getElementById("surahList");
 
     fetch(MIN_URL)
-      .then(r => r.json())
+      .then(res => res.json())
       .then(data => {
-        list.innerHTML = "";
-        data.forEach(s => {
-          const row = document.createElement("div");
-          row.className = "surah-row";
-          row.innerHTML = `
-            <div>${s["Surah No."]}</div>
-            <div>${s["In English"]} <span style="color:#aaa">(${s["Surah Name"]})</span></div>
-            <div>${s["Juz No."]}</div>
+        listDiv.innerHTML = "";
+        data.forEach(surah => {
+          const div = document.createElement("div");
+          div.className = "surah-card";
+          div.innerHTML = `
+            <div class="surah-name">${surah["Surah No."]}. ${surah["In English"]}</div>
+            <div>${surah["Surah Name"]}</div>
+            <div class="juz">Juz: ${surah["Juz No."]}</div>
           `;
-          row.onclick = () => {
-            window.location.href = \`surah.html?no=\${s["Surah No."]}\`;
+          div.onclick = () => {
+            // navigate to surah.html with surah number
+            window.location.href = `surah.html?no=${surah["Surah No."]}`;
           };
-          list.appendChild(row);
+          listDiv.appendChild(div);
         });
       })
-      .catch(() => list.textContent = "Error loading surahs");
+      .catch(err => {
+        listDiv.innerHTML = "Error loading surahs.";
+        console.error(err);
+      });
   </script>
 </body>
 </html>
+
