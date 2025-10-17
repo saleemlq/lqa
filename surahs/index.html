@@ -1,59 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Surah List</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    body { font-family: sans-serif; margin: 20px; background: #f7f8fa; }
-    h1 { text-align: center; }
-    .surah-card {
-      background: white;
-      margin: 10px auto;
-      padding: 10px 15px;
-      border-radius: 10px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      max-width: 500px;
-      cursor: pointer;
-      transition: transform 0.2s;
+    body { 
+      font-family: "Segoe UI", sans-serif; 
+      padding: 20px; 
+      background: #f7f7f7; 
     }
-    .surah-card:hover { transform: scale(1.02); }
-    .surah-name { font-size: 1.1em; font-weight: bold; }
-    .juz { color: #555; }
+
+    /* ---- Header Row ---- */
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .page-header h1 {
+      margin: 0;
+      text-align: center;
+      flex: 1;
+    }
+
+    /* Search box */
+    .search-box {
+      position: absolute;
+      right: 0;
+      display: flex;
+      align-items: center;
+      background: white;
+      border-radius: 20px;
+      padding: 5px 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+
+    .search-box input {
+      border: none;
+      outline: none;
+      padding: 5px 8px;
+      font-size: 14px;
+      width: 150px;
+      background: transparent;
+    }
+
+    .search-box i {
+      color: #666;
+      font-size: 14px;
+    }
+
+    /* ---- Grid Layout ---- */
+    .header, .card {
+      display: grid;
+      grid-template-columns: 
+        0.5fr   /* No. */
+        2fr     /* Surah name */
+        1.5fr   /* Meaning */
+        1fr     /* Place */
+        1fr     /* Juzz */
+        1fr     /* Verses */
+        1fr;    /* Order of Revelation */
+      gap: 10px;
+      align-items: center;
+      padding: 12px 16px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      margin-bottom: 10px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    /* Sticky Header */
+    .header {
+      font-weight: bold; 
+      background: #e9ecef;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-top: 2px solid #ddd;
+    }
+
+    .card:hover { 
+      background: #f1f1f1; 
+      cursor: pointer; 
+    }
+
+    #surah-list { margin: 0 auto; }
+
+    @media (max-width: 900px) {
+      .header, .card {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        font-size: 13px;
+      }
+      .search-box input {
+        width: 100px;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>📖 Surah List</h1>
-  <div id="surahList">Loading...</div>
+  <div class="page-header">
+    <h1>Surahs of the Qur’an</h1>
+    <div class="search-box">
+      <i class="fas fa-search"></i>
+      <input type="text" id="searchInput" placeholder="Search...">
+    </div>
+  </div>
+
+  <div class="header">
+    <div><i class="fas fa-hashtag"></i></div>
+    <div><i class="fas fa-book-open"></i> Surah</div>
+    <div><i class="fas fa-language"></i> Meaning</div>
+    <div><i class="fas fa-kaaba"></i> Place</div>
+    <div><i class="fas fa-scroll"></i> Juzz</div>
+    <div><i class="fas fa-list-ol"></i> Verses</div>
+    <div><i class="fas fa-seedling"></i> Order</div>
+  </div>
+
+  <div id="surah-list"></div>
 
   <script>
-    const MIN_URL = "https://raw.githubusercontent.com/saleemlq/static-database/main/surahs/surahs_min.json";
-    const listDiv = document.getElementById("surahList");
+    let allSurahs = [];
 
-    fetch(MIN_URL)
-      .then(res => res.json())
-      .then(data => {
-        listDiv.innerHTML = "";
-        data.forEach(surah => {
-          const div = document.createElement("div");
-          div.className = "surah-card";
-          div.innerHTML = `
-            <div class="surah-name">${surah["Surah No."]}. ${surah["In English"]}</div>
-            <div>${surah["Surah Name"]}</div>
-            <div class="juz">Juz: ${surah["Juz No."]}</div>
-          `;
-          div.onclick = () => {
-            // navigate to surah.html with surah number
-            window.location.href = `surah.html?no=${surah["Surah No."]}`;
-          };
-          listDiv.appendChild(div);
+    async function loadSurahs() {
+      const response = await fetch('https://raw.githubusercontent.com/saleemlq/static-database/main/surahs/surah-base-info.json');
+      const data = await response.json();
+      allSurahs = data;
+      renderSurahs(data);
+    }
+
+    function renderSurahs(data) {
+      const list = document.getElementById('surah-list');
+      list.innerHTML = '';
+      data.forEach(surah => {
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `
+          <div>${surah["Surah No."]}</div>
+          <div><b>${surah["In English"]}</b> — ${surah["Surah Name"]}</div>
+          <div>${surah["Meaning in English"]}</div>
+          <div>${surah["Place"]}</div>
+          <div>${surah["Juz No."] || '-'}</div>
+          <div>${surah["No. of Verses"]}</div>
+          <div>${surah["Order Of Revolution"]}</div>
+        `;
+        div.addEventListener('click', () => {
+          window.location.href = `surah.html?id=${surah["Surah No."]}`;
         });
-      })
-      .catch(err => {
-        listDiv.innerHTML = "Error loading surahs.";
-        console.error(err);
+        list.appendChild(div);
       });
+    }
+
+    // Live search
+    document.getElementById('searchInput').addEventListener('input', e => {
+      const term = e.target.value.toLowerCase();
+      const filtered = allSurahs.filter(s =>
+        s["Surah Name"].toLowerCase().includes(term) ||
+        s["In English"].toLowerCase().includes(term) ||
+        s["Meaning in English"].toLowerCase().includes(term)
+      );
+      renderSurahs(filtered);
+    });
+
+    loadSurahs();
   </script>
 </body>
 </html>
-
