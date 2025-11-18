@@ -81,6 +81,45 @@ function getListOfStudents(schedule) {
   return [...new Set(schedule.map(e => e.student))];
 }
 
+// ---------- NEW: Auto-update current class on page load ----------
+function updateCurrentClassOnLoad() {
+  const scheduleJSON = localStorage.getItem("schedule");
+  if (!scheduleJSON) return;
+
+  const schedule = JSON.parse(scheduleJSON);
+
+  // find current class
+  const currentClass = getCurrentClass(schedule);
+
+  if (currentClass) {
+    const classTimeStr =
+      currentClass.start.getFullYear().toString() +
+      String(currentClass.start.getMonth() + 1).padStart(2, "0") +
+      String(currentClass.start.getDate()).padStart(2, "0") +
+      String(currentClass.start.getHours()).padStart(2, "0") +
+      String(currentClass.start.getMinutes()).padStart(2, "0");
+
+    localStorage.setItem(
+      "currentClass",
+      JSON.stringify({
+        studentName: currentClass.student,
+        classTime: classTimeStr
+      })
+    );
+
+    localStorage.setItem("activeStudent", currentClass.student);
+    return;
+  }
+
+  // otherwise next class
+  const nextClass = getNextClass(schedule);
+  if (nextClass) {
+    localStorage.setItem("activeStudent", nextClass.student);
+  }
+
+  localStorage.removeItem("currentClass");
+}
+
 // ---------- Save Schedule ----------
 async function saveScheduleFromClipboard() {
   try {
@@ -107,7 +146,6 @@ async function saveScheduleFromClipboard() {
 
     if (currentClass) {
       activeStudent = currentClass.student;
-      // save current class in storage
       const classTimeStr =
         currentClass.start.getFullYear().toString() +
         String(currentClass.start.getMonth() + 1).padStart(2, "0") +
@@ -127,7 +165,6 @@ async function saveScheduleFromClipboard() {
       if (nextClass) {
         activeStudent = nextClass.student;
       }
-      // clear currentClass if no ongoing
       localStorage.removeItem("currentClass");
     }
 
@@ -135,7 +172,6 @@ async function saveScheduleFromClipboard() {
       localStorage.setItem("activeStudent", activeStudent);
     }
 
-    // 🔄 reload after saving
     location.reload();
 
   } catch (err) {
@@ -146,6 +182,8 @@ async function saveScheduleFromClipboard() {
 
 // attach handler
 window.addEventListener("DOMContentLoaded", () => {
+  updateCurrentClassOnLoad(); // 👈 NEW: auto update on load
+
   const btn = document.getElementById("manage-schedule-btn");
   if (btn) {
     btn.addEventListener("click", saveScheduleFromClipboard);
