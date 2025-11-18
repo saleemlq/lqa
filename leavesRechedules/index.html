@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-
+
+scale=1.0" />
 <title>Full Monthly Class Calendar</title>
 <style>
   body {
@@ -158,17 +160,29 @@
 
 <script>
   // --- LOCAL STORAGE DATA ---
-  let schedule = JSON.parse(localStorage.getItem("schedule") || "[]");
-  let leaves = JSON.parse(localStorage.getItem("leavesArray") || "[]");
-  let listOfStudents = JSON.parse(localStorage.getItem("listOfStudents") || "[]");
-  let activeStudent = localStorage.getItem("activeStudent") || (listOfStudents[0] || "");
+  let schedule = JSON.parse(localStorage.getItem("schedule") || 
+
+"[]");
+  let leaves = JSON.parse(localStorage.getItem("leavesArray") 
+
+|| "[]");
+  let listOfStudents = JSON.parse(localStorage.getItem
+
+("listOfStudents") || "[]");
+  let activeStudent = localStorage.getItem("activeStudent") || 
+
+(listOfStudents[0] || "");
 
   function saveLeaves() {
-    localStorage.setItem("leavesArray", JSON.stringify(leaves));
+    localStorage.setItem("leavesArray", JSON.stringify
+
+(leaves));
   }
 
   function toggleLeave(key) {
-    leaves.includes(key) ? leaves = leaves.filter(x => x !== key) : leaves.push(key);
+    leaves.includes(key) ? leaves = leaves.filter(x => x !== 
+
+key) : leaves.push(key);
     saveLeaves();
     render();
   }
@@ -186,10 +200,16 @@
   const currentMonth = display.getMonth();
   const currentYear = display.getFullYear();
 
-  const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const monthNames = 
+
+["January","February","March","April","May","June","July","Augu
+
+st","September","October","November","December"];
 
   // --- STUDENT DROPDOWN ---
-  const studentSelect = document.getElementById("studentSelect");
+  const studentSelect = document.getElementById
+
+("studentSelect");
   listOfStudents.forEach(s => {
     let opt = document.createElement("option");
     opt.value = s;
@@ -197,7 +217,9 @@
     studentSelect.appendChild(opt);
   });
   studentSelect.value = activeStudent;
-  studentSelect.addEventListener("change", e => setActiveStudent(e.target.value));
+  studentSelect.addEventListener("change", e => 
+
+setActiveStudent(e.target.value));
 
   function buildMonthlyMatrix() {
     const last = new Date(displayYear, displayMonth + 1, 0);
@@ -217,23 +239,31 @@
 
   function getUniqueTimes() {
     return [...new Set(schedule.map(s => s.time))].sort(
-      (a, b) => new Date("2000-1-1 " + a) - new Date("2000-1-1 " + b)
+      (a, b) => new Date("2000-1-1 " + a) - new Date("2000-1-1 
+
+" + b)
     );
   }
 
   function renderCalendar() {
-    document.getElementById("monthYear").textContent = `${monthNames[displayMonth]} ${displayYear}`;
+    document.getElementById("monthYear").textContent = `
+
+${monthNames[displayMonth]} ${displayYear}`;
     const weeks = buildMonthlyMatrix();
     const times = getUniqueTimes();
     let html = "";
     const today = new Date();
 
     weeks.forEach((week, wIndex) => {
-      html += `<div class='week-label'>Week ${wIndex + 1}</div>`;
+      html += `<div class='week-label'>Week ${wIndex + 1}
+
+</div>`;
       html += `<table><tr><th class='time-col'>Time</th>`;
 
       week.forEach(d => {
-        let wd = d.toLocaleString('en-US', { weekday: 'short' }).toUpperCase();
+        let wd = d.toLocaleString('en-US', { weekday: 'short' 
+
+}).toUpperCase();
         html += `<th>${wd}<br>${d.getDate()}</th>`;
       });
 
@@ -242,22 +272,34 @@
       times.forEach(time => {
         html += `<tr><td class='time-col'>${time}</td>`;
         week.forEach(d => {
-          let weekday = d.toLocaleString('en-US', { weekday: 'long' }).toUpperCase();
-          let classEntry = schedule.find(s => s.day === weekday && s.time === time);
-          let isToday = today.toDateString() === d.toDateString();
+          let weekday = d.toLocaleString('en-US', { weekday: 
+
+'long' }).toUpperCase();
+          let classEntry = schedule.find(s => s.day === weekday 
+
+&& s.time === time);
+          let isToday = today.toDateString() === 
+
+d.toDateString();
           let htmlClass = "class-cell";
           let content = "";
           let key = null;
 
           if (classEntry) {
-            key = `${d.getDate()}|${time}|${classEntry.student}`;
+            key = `${d.getDate()}|${time}|
+
+${classEntry.student}`;
             if (leaves.includes(key)) htmlClass += " leave";
-            if (classEntry.student === activeStudent) htmlClass += " active-student";
+            if (classEntry.student === activeStudent) htmlClass 
+
++= " active-student";
             if (isToday) htmlClass += " today";
             content = classEntry.student;
           }
 
-          html += `<td class='${htmlClass}' onclick="${key ? `toggleLeave('${key}')` : ''}">${content}</td>`;
+          html += `<td class='${htmlClass}' onclick="${key ? 
+
+`toggleLeave('${key}')` : ''}">${content}</td>`;
         });
         html += `</tr>`;
       });
@@ -270,7 +312,9 @@
     let todayCell = document.querySelector('.today');
     if (todayCell) {
       let weekTable = todayCell.closest('table');
-      let container = document.getElementById("calendar-section");
+      let container = document.getElementById("calendar-
+
+section");
       container.scrollTop = weekTable.offsetTop - 10;
     }
   }
@@ -282,15 +326,21 @@
 
     for (let d = 1; d <= last.getDate(); d++) {
       let date = new Date(displayYear, displayMonth, d);
-      let weekday = date.toLocaleString('en-US', { weekday: 'long' }).toUpperCase();
+      let weekday = date.toLocaleString('en-US', { weekday: 
+
+'long' }).toUpperCase();
       schedule.filter(s => s.day === weekday).forEach(s => {
         let full = new Date(displayYear, displayMonth, d);
-        let [h, m, ap] = s.time.replace(/ /g, '|').split(/[:|]/);
+        let [h, m, ap] = s.time.replace(/ /g, '|').split(/
+
+[:|]/);
         let hr = (parseInt(h) % 12) + (ap === "PM" ? 12 : 0);
         full.setHours(hr, parseInt(m));
         if (full > now) {
           let key = `${d}|${s.time}|${s.student}`;
-          upcoming.push({ date: full, key, student: s.student });
+          upcoming.push({ date: full, key, student: s.student 
+
+});
         }
       });
     }
@@ -300,7 +350,11 @@
 
     upcoming.slice(0, 30).forEach(u => {
       let leave = leaves.includes(u.key);
-      html += `<div class='class-btn ${leave ? "leave-btn" : ""}' onclick="toggleLeave('${u.key}')">${u.date.toLocaleString()}<br>${u.student}</div>`;
+      html += `<div class='class-btn ${leave ? "leave-btn" : 
+
+""}' onclick="toggleLeave('${u.key}')">${u.date.toLocaleString
+
+()}<br>${u.student}</div>`;
     });
 
     document.getElementById("upcomingList").innerHTML = html;
@@ -308,25 +362,41 @@
 
   function render() {
     // Restrict navigation buttons
-    document.getElementById("prevBtn").disabled = displayMonth <= currentMonth && displayYear <= currentYear;
-    document.getElementById("nextBtn").disabled = displayMonth >= currentMonth && displayYear >= currentYear;
+    document.getElementById("prevBtn").disabled = displayMonth 
+
+<= currentMonth && displayYear <= currentYear;
+    document.getElementById("nextBtn").disabled = displayMonth 
+
+>= currentMonth && displayYear >= currentYear;
 
     renderCalendar();
     renderUpcoming();
   }
 
-  document.getElementById("prevBtn").addEventListener("click", () => {
-    if (!(displayMonth <= currentMonth && displayYear <= currentYear)) {
+  document.getElementById("prevBtn").addEventListener("click", 
+
+() => {
+    if (!(displayMonth <= currentMonth && displayYear <= 
+
+currentYear)) {
       displayMonth--;
-      if (displayMonth < 0) { displayMonth = 11; displayYear--; }
+      if (displayMonth < 0) { displayMonth = 11; displayYear--; 
+
+}
       render();
     }
   });
 
-  document.getElementById("nextBtn").addEventListener("click", () => {
-    if (!(displayMonth >= currentMonth && displayYear >= currentYear)) {
+  document.getElementById("nextBtn").addEventListener("click", 
+
+() => {
+    if (!(displayMonth >= currentMonth && displayYear >= 
+
+currentYear)) {
       displayMonth++;
-      if (displayMonth > 11) { displayMonth = 0; displayYear++; }
+      if (displayMonth > 11) { displayMonth = 0; displayYear++; 
+
+}
       render();
     }
   });
