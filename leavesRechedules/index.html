@@ -1,298 +1,337 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Full Monthly Class Calendar</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f4f7;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Full Monthly Class Calendar</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f4f7;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
 
-    header {
-      background: #2c3e50;
-      color: #fff;
-      padding: 10px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+  header {
+    background: #2c3e50;
+    color: #fff;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 
-    #container {
-      flex: 1;
-      display: flex;
-      overflow: hidden;
-    }
+  #header-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 
-    #calendar-section {
-      flex: 2;
-      background: #fff;
-      overflow-y: auto;
-      padding: 20px;
-    }
+  select {
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: none;
+    font-size: 14px;
+  }
 
-    #upcoming-section {
-      flex: 1;
-      background: #fafafa;
-      border-left: 1px solid #ddd;
-      overflow-y: auto;
-      padding: 20px;
-    }
+  #container {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 30px;
-    }
+  #calendar-section {
+    flex: 2;
+    background: #fff;
+    overflow-y: auto;
+    padding: 20px;
+  }
 
-    th, td {
-      border: 1px solid #ddd;
-      padding: 6px;
-      text-align: center;
-    }
+  #upcoming-section {
+    flex: 1;
+    background: #fafafa;
+    border-left: 1px solid #ddd;
+    overflow-y: auto;
+    padding: 20px;
+  }
 
-    th {
-      background: #34495e;
-      color: #fff;
-      position: sticky;
-      top: 0;
-      z-index: 3;
-    }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+  }
 
-    .week-label {
-      background: #eaeaea;
-      font-weight: bold;
-      padding: 6px;
-      margin-top: 10px;
-    }
+  th, td {
+    border: 1px solid #ddd;
+    padding: 6px;
+    text-align: center;
+  }
 
-    .today {
-      background: #d0e8ff !important;
-      font-weight: bold;
-    }
+  th {
+    background: #34495e;
+    color: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 3;
+  }
 
-    .leave {
-      background: #ffd3d3 !important;
-      color: #a10000 !important;
-      font-weight: bold;
-    }
+  .week-label {
+    background: #eaeaea;
+    font-weight: bold;
+    padding: 6px;
+    margin-top: 10px;
+  }
 
-    .time-col {
-      background: #f1f1f1;
-      font-weight: bold;
-      width: 70px;
-      position: sticky;
-      left: 0;
-      z-index: 2;
-    }
+  .today {
+    background: #d0e8ff !important;
+    font-weight: bold;
+  }
 
-    .class-cell {
-      cursor: pointer;
-      padding: 4px;
-      transition: 0.2s;
-    }
+  .leave {
+    background: #ffd3d3 !important;
+    color: #a10000 !important;
+    font-weight: bold;
+  }
 
-    .class-cell:hover {
-      background: #eefaff;
-    }
+  .active-student {
+    background: #c7f5d9 !important;
+    font-weight: bold;
+  }
 
-    .class-btn {
-      display: block;
-      padding: 6px;
-      margin: 4px 0;
-      background: #eefaff;
-      border-radius: 4px;
-      cursor: pointer;
-      border: 1px solid #b9e6ff;
-    }
+  .time-col {
+    background: #f1f1f1;
+    font-weight: bold;
+    width: 70px;
+    position: sticky;
+    left: 0;
+    z-index: 2;
+  }
 
-    .leave-btn {
-      background: #ffd3d3 !important;
-      border-color: #ffb8b8 !important;
-    }
-  </style>
+  .class-cell {
+    cursor: pointer;
+    padding: 4px;
+    transition: 0.2s;
+  }
+
+  .class-cell:hover {
+    background: #eefaff;
+  }
+
+  .class-btn {
+    display: block;
+    padding: 6px;
+    margin: 4px 0;
+    background: #eefaff;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid #b9e6ff;
+  }
+
+  .leave-btn {
+    background: #ffd3d3 !important;
+    border-color: #ffb8b8 !important;
+  }
+</style>
 </head>
 <body>
-  <header>
-    <h1 id="monthYear"></h1>
-    <div>
-      <button onclick="prevMonth()">◀</button>
-      <button onclick="nextMonth()">▶</button>
-    </div>
-  </header>
-
-  <div id="container">
-    <section id="calendar-section">
-      <div id="calendarOutput"></div>
-    </section>
-
-    <section id="upcoming-section">
-      <h2>Upcoming Classes</h2>
-      <div id="upcomingList"></div>
-    </section>
+<header>
+  <h1 id="monthYear"></h1>
+  <div id="header-controls">
+    <button id="prevBtn">◀</button>
+    <button id="nextBtn">▶</button>
+    <select id="studentSelect"></select>
   </div>
+</header>
 
-  <script>
-    let schedule = JSON.parse(localStorage.getItem("schedule") || "[]");
-    let leaves = JSON.parse(localStorage.getItem("leavesArray") || "[]");
+<div id="container">
+  <section id="calendar-section">
+    <div id="calendarOutput"></div>
+  </section>
 
-    function saveLeaves() {
-      localStorage.setItem("leavesArray", JSON.stringify(leaves));
-    }
+  <section id="upcoming-section">
+    <h2>Upcoming Classes</h2>
+    <div id="upcomingList"></div>
+  </section>
+</div>
 
-    function toggleLeave(key) {
-      leaves.includes(key) ? leaves = leaves.filter(x => x !== key) : leaves.push(key);
-      saveLeaves();
-      render();
-    }
+<script>
+  // --- LOCAL STORAGE DATA ---
+  let schedule = JSON.parse(localStorage.getItem("schedule") || "[]");
+  let leaves = JSON.parse(localStorage.getItem("leavesArray") || "[]");
+  let listOfStudents = JSON.parse(localStorage.getItem("listOfStudents") || "[]");
+  let activeStudent = localStorage.getItem("activeStudent") || (listOfStudents[0] || "");
 
-    let display = new Date();
-    let displayMonth = display.getMonth();
-    let displayYear = display.getFullYear();
+  function saveLeaves() {
+    localStorage.setItem("leavesArray", JSON.stringify(leaves));
+  }
 
-    function buildMonthlyMatrix() {
-      const first = new Date(displayYear, displayMonth, 1);
-      const last = new Date(displayYear, displayMonth + 1, 0);
-      let matrix = [];
-      let week = [];
-
-      for (let d = 1; d <= last.getDate(); d++) {
-        let date = new Date(displayYear, displayMonth, d);
-        if (date.getDay() === 0 && week.length) {
-          matrix.push(week);
-          week = [];
-        }
-        week.push(date);
-      }
-
-      if (week.length) matrix.push(week);
-      return matrix;
-    }
-
-    function getUniqueTimes() {
-      return [...new Set(schedule.map(s => s.time))].sort(
-        (a, b) => new Date("2000-1-1 " + a) - new Date("2000-1-1 " + b)
-      );
-    }
-
-    function renderCalendar() {
-      const weeks = buildMonthlyMatrix();
-      const times = getUniqueTimes();
-      let html = "";
-      const today = new Date();
-
-      weeks.forEach((week, wIndex) => {
-        html += `<div class='week-label'>Week ${wIndex + 1}</div>`;
-        html += `<table><tr><th class='time-col'>Time</th>`;
-
-        week.forEach(d => {
-          let wd = d.toLocaleString('en-US', { weekday: 'short' }).toUpperCase();
-          html += `<th>${wd}<br>${d.getDate()}</th>`;
-        });
-
-        html += `</tr>`;
-
-        times.forEach(time => {
-          html += `<tr><td class='time-col'>${time}</td>`;
-
-          week.forEach(d => {
-            let weekday = d.toLocaleString('en-US', { weekday: 'long' }).toUpperCase();
-            let classEntry = schedule.find(s => s.day === weekday && s.time === time);
-            let isToday = today.toDateString() === d.toDateString();
-            let htmlClass = "class-cell";
-            let content = "";
-            let key = null;
-
-            if (classEntry) {
-              key = `${d.getDate()}|${time}|${classEntry.student}`;
-              if (leaves.includes(key)) htmlClass += " leave";
-              if (isToday) htmlClass += " today";
-              content = classEntry.student;
-            }
-
-            html += `<td class='${htmlClass}' onclick="${key ? `toggleLeave('${key}')` : ''}">${content}</td>`;
-          });
-
-          html += `</tr>`;
-        });
-
-        html += `</table>`;
-      });
-
-      document.getElementById("calendarOutput").innerHTML = html;
-
-      // Scroll the current week to the top of the container
-      let todayCell = document.querySelector('.today');
-      if (todayCell) {
-        let weekTable = todayCell.closest('table');
-        let container = document.getElementById("calendar-section");
-        container.scrollTop = weekTable.offsetTop - 100; // small offset
-      }
-    }
-
-    function renderUpcoming() {
-      const now = new Date();
-      let upcoming = [];
-
-      const first = new Date(displayYear, displayMonth, 1);
-      const last = new Date(displayYear, displayMonth + 1, 0);
-
-      for (let d = 1; d <= last.getDate(); d++) {
-        let date = new Date(displayYear, displayMonth, d);
-        let weekday = date.toLocaleString('en-US', { weekday: 'long' }).toUpperCase();
-
-        schedule.filter(s => s.day === weekday).forEach(s => {
-          let full = new Date(displayYear, displayMonth, d);
-          let [h, m, ap] = s.time.replace(/ /g, '|').split(/[:|]/);
-          let hr = (parseInt(h) % 12) + (ap === "PM" ? 12 : 0);
-          full.setHours(hr, parseInt(m));
-          if (full > now) {
-            let key = `${d}|${s.time}|${s.student}`;
-            upcoming.push({ date: full, key, student: s.student });
-          }
-        });
-      }
-
-      upcoming.sort((a, b) => a.date - b.date);
-      let html = "";
-
-      upcoming.slice(0, 30).forEach(u => {
-        let leave = leaves.includes(u.key);
-        html += `<div class='class-btn ${leave ? "leave-btn" : ""}' onclick="toggleLeave('${u.key}')">${u.date.toLocaleString()}<br>${u.student}</div>`;
-      });
-
-      document.getElementById("upcomingList").innerHTML = html;
-    }
-
-    function render() {
-      renderCalendar();
-      renderUpcoming();
-    }
-
-    function prevMonth() {
-      displayMonth--;
-      if (displayMonth < 0) {
-        displayMonth = 11;
-        displayYear--;
-      }
-      render();
-    }
-
-    function nextMonth() {
-      displayMonth++;
-      if (displayMonth > 11) {
-        displayMonth = 0;
-        displayYear++;
-      }
-      render();
-    }
-
+  function toggleLeave(key) {
+    leaves.includes(key) ? leaves = leaves.filter(x => x !== key) : leaves.push(key);
+    saveLeaves();
     render();
-  </script>
+  }
+
+  function setActiveStudent(student) {
+    activeStudent = student;
+    localStorage.setItem("activeStudent", student);
+    render();
+  }
+
+  // --- DISPLAY MONTH ---
+  const display = new Date();
+  let displayMonth = display.getMonth();
+  let displayYear = display.getFullYear();
+  const currentMonth = display.getMonth();
+  const currentYear = display.getFullYear();
+
+  const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+  // --- STUDENT DROPDOWN ---
+  const studentSelect = document.getElementById("studentSelect");
+  listOfStudents.forEach(s => {
+    let opt = document.createElement("option");
+    opt.value = s;
+    opt.textContent = s;
+    studentSelect.appendChild(opt);
+  });
+  studentSelect.value = activeStudent;
+  studentSelect.addEventListener("change", e => setActiveStudent(e.target.value));
+
+  function buildMonthlyMatrix() {
+    const last = new Date(displayYear, displayMonth + 1, 0);
+    let matrix = [];
+    let week = [];
+    for (let d = 1; d <= last.getDate(); d++) {
+      let date = new Date(displayYear, displayMonth, d);
+      if (date.getDay() === 0 && week.length) {
+        matrix.push(week);
+        week = [];
+      }
+      week.push(date);
+    }
+    if (week.length) matrix.push(week);
+    return matrix;
+  }
+
+  function getUniqueTimes() {
+    return [...new Set(schedule.map(s => s.time))].sort(
+      (a, b) => new Date("2000-1-1 " + a) - new Date("2000-1-1 " + b)
+    );
+  }
+
+  function renderCalendar() {
+    document.getElementById("monthYear").textContent = `${monthNames[displayMonth]} ${displayYear}`;
+    const weeks = buildMonthlyMatrix();
+    const times = getUniqueTimes();
+    let html = "";
+    const today = new Date();
+
+    weeks.forEach((week, wIndex) => {
+      html += `<div class='week-label'>Week ${wIndex + 1}</div>`;
+      html += `<table><tr><th class='time-col'>Time</th>`;
+
+      week.forEach(d => {
+        let wd = d.toLocaleString('en-US', { weekday: 'short' }).toUpperCase();
+        html += `<th>${wd}<br>${d.getDate()}</th>`;
+      });
+
+      html += `</tr>`;
+
+      times.forEach(time => {
+        html += `<tr><td class='time-col'>${time}</td>`;
+        week.forEach(d => {
+          let weekday = d.toLocaleString('en-US', { weekday: 'long' }).toUpperCase();
+          let classEntry = schedule.find(s => s.day === weekday && s.time === time);
+          let isToday = today.toDateString() === d.toDateString();
+          let htmlClass = "class-cell";
+          let content = "";
+          let key = null;
+
+          if (classEntry) {
+            key = `${d.getDate()}|${time}|${classEntry.student}`;
+            if (leaves.includes(key)) htmlClass += " leave";
+            if (classEntry.student === activeStudent) htmlClass += " active-student";
+            if (isToday) htmlClass += " today";
+            content = classEntry.student;
+          }
+
+          html += `<td class='${htmlClass}' onclick="${key ? `toggleLeave('${key}')` : ''}">${content}</td>`;
+        });
+        html += `</tr>`;
+      });
+      html += `</table>`;
+    });
+
+    document.getElementById("calendarOutput").innerHTML = html;
+
+    // Scroll current week
+    let todayCell = document.querySelector('.today');
+    if (todayCell) {
+      let weekTable = todayCell.closest('table');
+      let container = document.getElementById("calendar-section");
+      container.scrollTop = weekTable.offsetTop - 10;
+    }
+  }
+
+  function renderUpcoming() {
+    const now = new Date();
+    let upcoming = [];
+    const last = new Date(displayYear, displayMonth + 1, 0);
+
+    for (let d = 1; d <= last.getDate(); d++) {
+      let date = new Date(displayYear, displayMonth, d);
+      let weekday = date.toLocaleString('en-US', { weekday: 'long' }).toUpperCase();
+      schedule.filter(s => s.day === weekday).forEach(s => {
+        let full = new Date(displayYear, displayMonth, d);
+        let [h, m, ap] = s.time.replace(/ /g, '|').split(/[:|]/);
+        let hr = (parseInt(h) % 12) + (ap === "PM" ? 12 : 0);
+        full.setHours(hr, parseInt(m));
+        if (full > now) {
+          let key = `${d}|${s.time}|${s.student}`;
+          upcoming.push({ date: full, key, student: s.student });
+        }
+      });
+    }
+
+    upcoming.sort((a, b) => a.date - b.date);
+    let html = "";
+
+    upcoming.slice(0, 30).forEach(u => {
+      let leave = leaves.includes(u.key);
+      html += `<div class='class-btn ${leave ? "leave-btn" : ""}' onclick="toggleLeave('${u.key}')">${u.date.toLocaleString()}<br>${u.student}</div>`;
+    });
+
+    document.getElementById("upcomingList").innerHTML = html;
+  }
+
+  function render() {
+    // Restrict navigation buttons
+    document.getElementById("prevBtn").disabled = displayMonth <= currentMonth && displayYear <= currentYear;
+    document.getElementById("nextBtn").disabled = displayMonth >= currentMonth && displayYear >= currentYear;
+
+    renderCalendar();
+    renderUpcoming();
+  }
+
+  document.getElementById("prevBtn").addEventListener("click", () => {
+    if (!(displayMonth <= currentMonth && displayYear <= currentYear)) {
+      displayMonth--;
+      if (displayMonth < 0) { displayMonth = 11; displayYear--; }
+      render();
+    }
+  });
+
+  document.getElementById("nextBtn").addEventListener("click", () => {
+    if (!(displayMonth >= currentMonth && displayYear >= currentYear)) {
+      displayMonth++;
+      if (displayMonth > 11) { displayMonth = 0; displayYear++; }
+      render();
+    }
+  });
+
+  render();
+</script>
 </body>
 </html>
