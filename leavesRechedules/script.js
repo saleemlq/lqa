@@ -146,7 +146,7 @@ function renderCalendar() {
   if (todayCell) {
     let weekTable = todayCell.closest("table");
     let container = document.getElementById("calendar-section");
-    container.scrollTop = weekTable.offsetTop - 10;
+    container.scrollTop = weekTable.offsetTop - 160;
   }
 }
 
