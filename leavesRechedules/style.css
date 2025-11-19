@@ -1,0 +1,110 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f4f7;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  background: #2c3e50;
+  color: #fff;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#header-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+select {
+  padding: 6px 10px;
+  border-radius: 4px;
+  border: none;
+  font-size: 14px;
+}
+
+#container {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+#calendar-section {
+  flex: 1;
+  background: #fff;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 6px;
+  text-align: center;
+}
+
+th {
+  background: #34495e;
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+
+.week-label {
+  background: #eaeaea;
+  font-weight: bold;
+  padding: 6px;
+  margin-top: 10px;
+}
+
+/* --- PRIORITY SYSTEM FIX --- */
+/* today overrides base */
+.class-cell.today {
+  background: #d0e8ff !important;
+  font-weight: bold;
+}
+
+/* active student overrides everything except today */
+.class-cell.active-student {
+  background: #c7f5d9 !important;
+  font-weight: bold;
+}
+
+/* leave (lowest priority of the 3) */
+.class-cell.leave {
+  background: #ffd3d3 !important;
+  color: #a10000 !important;
+  font-weight: bold;
+}
+
+.time-col {
+  background: #f1f1f1;
+  font-weight: bold;
+  width: 70px;
+  position: sticky;
+  left: 0;
+  z-index: 2;
+}
+
+.class-cell {
+  cursor: pointer;
+  padding: 4px;
+  transition: 0.2s;
+}
+
+.class-cell:hover {
+  background: #eefaff;
+}
