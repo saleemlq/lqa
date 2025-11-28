@@ -34,7 +34,7 @@ const predefined = {
   // Bold letters (these are letters that are pronounced with emphasis: ط، ص، ظ، ق)
   bold: () => {
     clearSelections();
-    const boldLetters = ["ط", "ص", "ظ", "ق"];
+    const boldLetters = ["ط","ظ","ص","ض","ق","غ","خ"];
 
     boldLetters.forEach((l) => {
       anyLetters.push(l);
