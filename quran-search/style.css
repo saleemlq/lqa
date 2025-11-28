@@ -200,3 +200,32 @@ button.sign-btn.selected {
 .ayah-icon {
     height: 16px;
 }
+
+.font-size-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.font-size-controls button {
+  width: 30px;
+  height: 30px;
+  font-size: 22px;
+  font-weight: bold;
+  border: 2px solid #caa94d;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.font-size-controls button:hover {
+  background: #ffeaa2;
+}
+
+#font-size-display {
+  min-width: 40px;
+  text-align: center;
+  font-weight: bold;
+}
+
