@@ -8,13 +8,16 @@ let anySigns = [], allSigns = [];
 let headerCollapsed = false;
 
 // Predefined selections
+// Predefined selections
 const predefined = {
     none: () => {
         clearSelections();
     },
+
+    // Saakin Halaqiyyah letters
     halaqi: () => {
         clearSelections();
-        const halaqiLetters = ["ء","ه","ع","ح","غ","خ","أ","إ","ؤ","ئ"]
+        const halaqiLetters = ["ء","ه","ع","ح","غ","خ","أ","إ","ؤ","ئ"];
         const sukoon = "ْ";
 
         halaqiLetters.forEach(l => {
@@ -24,8 +27,50 @@ const predefined = {
 
         anySigns.push(sukoon);
         toggleButtonSelection("any-signs", sukoon, true);
+    },
+
+    // Bold letters (these are letters that are pronounced with emphasis: ط، ص، ظ، ق)
+    bold: () => {
+        clearSelections();
+        const boldLetters = ["ط","ص","ظ","ق"];
+
+        boldLetters.forEach(l => {
+            anyLetters.push(l);
+            toggleButtonSelection("any-letters", l, true);
+        });
+    },
+
+    // Qalqalah letters (ق, ط, ب, ج, د) pronounced with echo when sukoon
+    qalqalah: () => {
+        clearSelections();
+        const qalqalahLetters = ["ق","ط","ب","ج","د"];
+        const sukoon = "ْ";
+
+        qalqalahLetters.forEach(l => {
+            anyLetters.push(l);
+            toggleButtonSelection("any-letters", l, true);
+        });
+
+        anySigns.push(sukoon);
+        toggleButtonSelection("any-signs", sukoon, true);
+    },
+
+    // Real Ghunnah (Noon or Meem Mushaddad)
+    ghunnah: () => {
+        clearSelections();
+        const ghunnahLetters = ["ن","م"];
+        const shaddah = "ّ"; // Mushaddad
+
+        ghunnahLetters.forEach(l => {
+            anyLetters.push(l);
+            toggleButtonSelection("any-letters", l, true);
+        });
+
+        anySigns.push(shaddah);
+        toggleButtonSelection("any-signs", shaddah, true);
     }
 };
+
 
 function clearSelections() {
     anyLetters.length = 0;
@@ -223,4 +268,5 @@ function displayAyahs(){
         container.appendChild(div);
     });
 }
+
 
