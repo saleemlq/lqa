@@ -21,11 +21,11 @@
   <body>
     <header id="filter-header">
       <div id="toggle-header">
-        <div class="heading">
+        <div class="heading" id="heading">
           ☰ Quran Search <span class="by-aneeb">by Team Aneeb</span>
         </div>
 
-        <!-- NEW CUSTOM SELECT -->
+        <!-- CUSTOM SELECT -->
         <div class="custom-select-wrapper">
           <div id="custom-select-display">Predefined: None</div>
           <div id="custom-select-options" class="hidden">
@@ -38,7 +38,7 @@
               Qalqalah Letters
             </div>
             <div class="custom-option" data-key="ghunnah">
-              Real Ghunnah (Noon/Meem Mushaddad)
+              Real Ghunnah
             </div>
           </div>
         </div>
@@ -46,6 +46,13 @@
         <div class="filter-section occurrence-section">
           <h4>Occurrence</h4>
           <input type="number" id="occurrence" value="3" min="1" max="999" />
+        </div>
+
+        <!-- FONT SIZE CONTROLS -->
+        <div class="font-size-controls">
+          <button id="font-decrease">−</button>
+          <span id="font-size-display">40px</span>
+          <button id="font-increase">+</button>
         </div>
       </div>
 
