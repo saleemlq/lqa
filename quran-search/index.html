@@ -21,7 +21,6 @@
   <body>
     <header id="filter-header">
       <div id="toggle-header">
-        
         <div class="heading">
           ☰ Quran Search <span class="by-aneeb">by Team Aneeb</span>
         </div>
@@ -31,7 +30,16 @@
           <div id="custom-select-display">Predefined: None</div>
           <div id="custom-select-options" class="hidden">
             <div class="custom-option" data-key="none">None</div>
-            <div class="custom-option" data-key="halaqi">Saakin Halaqiyyah Letters</div>
+            <div class="custom-option" data-key="halaqi">
+              Saakin Halaqiyyah Letters
+            </div>
+            <div class="custom-option" data-key="bold">Bold Letters</div>
+            <div class="custom-option" data-key="qalqalah">
+              Qalqalah Letters
+            </div>
+            <div class="custom-option" data-key="ghunnah">
+              Real Ghunnah (Noon/Meem Mushaddad)
+            </div>
           </div>
         </div>
 
@@ -45,16 +53,24 @@
         <div class="filter-section">
           <h4>Any Of</h4>
           <div class="rows-container">
-            <div class="row-container"><div id="any-letters" class="letters-row"></div></div>
-            <div class="row-container"><div id="any-signs" class="signs-row"></div></div>
+            <div class="row-container">
+              <div id="any-letters" class="letters-row"></div>
+            </div>
+            <div class="row-container">
+              <div id="any-signs" class="signs-row"></div>
+            </div>
           </div>
         </div>
 
         <div class="filter-section">
           <h4>All Of</h4>
           <div class="rows-container">
-            <div class="row-container"><div id="all-letters" class="letters-row"></div></div>
-            <div class="row-container"><div id="all-signs" class="signs-row"></div></div>
+            <div class="row-container">
+              <div id="all-letters" class="letters-row"></div>
+            </div>
+            <div class="row-container">
+              <div id="all-signs" class="signs-row"></div>
+            </div>
           </div>
         </div>
       </div>
