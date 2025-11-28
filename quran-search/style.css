@@ -1,0 +1,202 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: "Play", sans-serif;
+  direction: rtl;
+  background: #fefbf7;
+  color: #222;
+}
+
+/* Header */
+header {
+  position: sticky;
+  top: 0;
+  background: #fff8e7;
+  border-bottom: 2px solid #ddd;
+  z-index: 1000;
+  transition: max-height 0.5s ease;
+}
+
+#collapsing-area.collapsed {
+  height: 0px;
+  overflow: hidden;
+  padding: 0;
+}
+
+#toggle-header {
+  padding: 15px 20px;
+  background: #ffd95b;
+  font-weight: bold;
+  font-size: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  direction: ltr;
+  user-select: none;
+}
+
+.heading {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.heading .by-aneeb {
+  font-size: 16px;
+  opacity: 0.8;
+  margin-left: 8px;
+}
+
+/* CUSTOM SELECT */
+.custom-select-wrapper {
+  position: relative;
+  width: 250px;
+  font-size: 18px;
+}
+
+#custom-select-display {
+  background: white;
+  padding: 10px 14px;
+  border: 2px solid #caa94d;
+  border-radius: 6px;
+  cursor: pointer;
+  user-select: none;
+}
+
+#custom-select-options {
+  position: absolute;
+  top: 48px;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border: 2px solid #caa94d;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  z-index: 999;
+}
+
+.custom-option {
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.custom-option:hover {
+  background: #ffeaa2;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Filters */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  direction: ltr;
+  gap: 30px;
+  padding: 15px 20px;
+  align-items: flex-start;
+  zoom: 85%;
+}
+
+.rows-container {
+  display: flex;
+  gap: 4px;
+}
+
+.row-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+button.letter-btn,
+button.sign-btn {
+  padding: 12px 14px;
+  font-size: 32px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button.letter-btn {
+  font-family: "Muhammadi";
+}
+button.sign-btn {
+  font-family: "Muhammadi";
+}
+
+button.letter-btn.selected,
+button.sign-btn.selected {
+  background: #ffd95b;
+}
+
+/* Occurrence */
+.occurrence-section {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+#occurrence {
+  width: 80px;
+  padding: 8px 10px;
+  font-size: 22px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-top: 5px;
+}
+
+/* Ayahs */
+#ayah-container {
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.ayah {
+  padding: 20px;
+  font-size: 40px;
+  font-family: "Muhammadi";
+  line-height: 2.2;
+  border-bottom: 1px solid #ddd;
+  position: relative;
+}
+
+.ayah::before {
+  content: "﴿";
+  font-size: 36px;
+  position: absolute;
+  right: -40px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .filters {
+    flex-direction: column;
+  }
+  button.letter-btn,
+  button.sign-btn {
+    font-size: 28px;
+    padding: 10px 12px;
+  }
+  .ayah {
+    font-size: 32px;
+  }
+  #occurrence {
+    width: 60px;
+    font-size: 20px;
+  }
+}
+
+.ayah-icon {
+    height: 16px;
+}
